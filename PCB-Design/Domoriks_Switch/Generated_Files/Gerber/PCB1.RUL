@@ -1,0 +1,5 @@
+DRC Rules Export File for PCB: C:\Users\Jorik Wittevrongel\OneDrive - SMO\Documenten\Domotica\Domoriks_Switch\PCB1.CSPcbDoc
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=4.00
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=5.91
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=9.84
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0
