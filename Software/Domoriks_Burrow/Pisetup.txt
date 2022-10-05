@@ -1,0 +1,62 @@
+No docker 
+
+See wsl install domorikis_brain/test/README_WSL....
+
+# Network merge wifi + ethernet?
+
+# USBdock + 2 x 4TB
+    https://www.megekko.nl/product/2036/994001/Hard-disks-3-5-/Seagate-HDD-NAS-3-5-4TB-ST4000VN008-Ironwolf
+    https://www.megekko.nl/product/6202/997513/USB-SATA-HDD-SSD-docking-station/LC-Power-LC-DOCK-U3-III-HDD-SSD-dockingstation
+
+# Boot of Usb
+    https://www.pragmaticlinux.com/2021/12/directly-boot-your-raspberry-pi-4-from-a-usb-drive/
+    OPTION boot ssd 120GB?
+    Eeprom update
+    https://www.raspberrystreet.com/learn/how-to-boot-raspberrypi-from-usb-ssd
+
+# Backup
+    https://www.tomshardware.com/how-to/back-up-raspberry-pi-as-disk-image
+    https://ehoco.nl/automatische-raspberry-pi-backup/
+    To Onedrive? Google drive + zpool
+
+# Raid with ZFS
+    https://somedudesays.com/2021/08/the-basic-guide-to-working-with-zfs/
+    https://www.cyberciti.biz/faq/how-to-check-zfs-file-system-storage-pool-on-linux-unix/
+    check with scrub monthly -> mail results
+    https://www.linuxfordevices.com/tutorials/linux/mail-command-in-linux
+    check drives daily
+    https://linuxhandbook.com/linux-list-disks/ compere autoput
+
+    cold start init? or init delay
+    https://forums.raspberrypi.com/viewtopic.php?t=248881
+
+    Recover when pi fails
+    https://unix.stackexchange.com/questions/564640/recover-import-zfs-pool-from-single-old-mirror
+
+    Recover when drive fails
+    https://www.dlford.io/linux-zfs-raid-disk-replacement-procedure/
+
+    Cache?
+    https://www.reddit.com/r/zfs/comments/pb2bne/how_to_best_use_ssd_as_caching_on_my_zfs_pool/
+
+# FTP
+    https://phoenixnap.com/kb/raspberry-pi-ftp-server
+
+# Samba
+    https://pimylifeup.com/raspberry-pi-samba/
+
+# Unifi-controller
+    https://raspberrytips.com/unifi-controller-raspberry-pi/
+
+    Telenet router          192.168.0.1
+
+    AP Ubiquiti             192.168.0.100
+    Raspberry pi            192.168.0.101
+    Controllino             192.168.0.102
+    SmartHome               192.168.0.103-120
+
+    Phones                  192.168.0.120-129
+    Tablets                 192.168.0.130-139
+    Laptops & PC            192.168.0.140-141
+
+    VLANS?
