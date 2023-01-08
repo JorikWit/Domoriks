@@ -29,7 +29,7 @@ PushECOToAnnotationFile=1
 DItemRevisionGUID=
 ReportSuppressedErrorsInMessages=0
 ForceUpdateCount=0
-OutputPath=Outputs
+OutputPath=
 LogFolderPath=
 ManagedProjectGUID=
 LinkedManagedProjectGUID=
@@ -90,77 +90,13 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[GeneratedDocument1]
-DocumentPath=Default Configuration\Outputs\ERC\Domoriks_Switch.html
-DItemRevisionGUID=
+[Parameter1]
+Name=Project
+Value=Domoriks
 
-[GeneratedDocument2]
-DocumentPath=Default Configuration\Outputs\NC Drill\PCB1.DRR
-DItemRevisionGUID=
-
-[GeneratedDocument3]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.EXTREP
-DItemRevisionGUID=
-
-[GeneratedDocument4]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GBL
-DItemRevisionGUID=
-
-[GeneratedDocument5]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GBO
-DItemRevisionGUID=
-
-[GeneratedDocument6]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GBP
-DItemRevisionGUID=
-
-[GeneratedDocument7]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GBS
-DItemRevisionGUID=
-
-[GeneratedDocument8]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GTL
-DItemRevisionGUID=
-
-[GeneratedDocument9]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GTO
-DItemRevisionGUID=
-
-[GeneratedDocument10]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GTP
-DItemRevisionGUID=
-
-[GeneratedDocument11]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.GTS
-DItemRevisionGUID=
-
-[GeneratedDocument12]
-DocumentPath=Default Configuration\Outputs\DRC\PCB1.html
-DItemRevisionGUID=
-
-[GeneratedDocument13]
-DocumentPath=Default Configuration\Outputs\NC Drill\PCB1.LDP
-DItemRevisionGUID=
-
-[GeneratedDocument14]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.Outline
-DItemRevisionGUID=
-
-[GeneratedDocument15]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.REP
-DItemRevisionGUID=
-
-[GeneratedDocument16]
-DocumentPath=Default Configuration\Outputs\Gerber\PCB1.RUL
-DItemRevisionGUID=
-
-[GeneratedDocument17]
-DocumentPath=Default Configuration\Outputs\ExportSTEP\PCB1.step
-DItemRevisionGUID=
-
-[GeneratedDocument18]
-DocumentPath=Default Configuration\Outputs\NC Drill\PCB1.TXT
-DItemRevisionGUID=
+[Parameter2]
+Name=Version
+Value=v1.1
 
 [Configuration1]
 Name=Default Configuration
@@ -175,7 +111,7 @@ DocumentReferenceClass1=DocumentReference
 OutputJobFileName1=Domoriks_Switch.OutJob
 
 [Generic_EDE]
-OutputDir=Outputs
+OutputDir=
 
 [OutputGroup1]
 Name=Netlist Outputs

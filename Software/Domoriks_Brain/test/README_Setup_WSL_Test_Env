@@ -144,7 +144,7 @@ dependencies.
 On windows in powershell as admin run
 
 ********************************************************************************
-netsh interface portproxy add v4tov4 listenport=8123 listenaddress=0.0.0.0 connectport=8123 connectaddress=172.20.193.169
+netsh interface portproxy add v4tov4 listenport=8123 listenaddress=0.0.0.0 connectport=8123 connectaddress=[IPaddress linux ifconfig]
 ********************************************************************************
 
 LOGIN WEB
@@ -188,6 +188,8 @@ Start
 
 ################################################################################
 sudo service mosquitto start
+sudo service mosquitto enable
+sudo service mosquitto status
 ################################################################################
 
 Test with 2 terminals
