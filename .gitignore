@@ -642,3 +642,13 @@ version.ini
 /Software/Domoriks_Switch/Domoriks_Switcher/Debug/Drivers/STM32G0xx_HAL_Driver/Src/*.mk
 /Software/Domoriks_Switch/Domoriks_Switcher/Debug/*.mk
 /Software/Domoriks_Switch/Domoriks_Switcher/Debug/makefile
+/Software/Domoriks_Switch/IO_test/Debug/Core/Src/*.o
+/Software/Domoriks_Switch/IO_test/Debug/Core/Src/*.mk
+/Software/Domoriks_Switch/IO_test/Debug/Core/Startup/*.o
+/Software/Domoriks_Switch/IO_test/Debug/Core/Startup/*.mk
+/Software/Domoriks_Switch/IO_test/Debug/Drivers/STM32G0xx_HAL_Driver/Src/*.o
+/Software/Domoriks_Switch/IO_test/Debug/Drivers/STM32G0xx_HAL_Driver/Src/*.mk
+/Software/Domoriks_Switch/IO_test/Debug/*.elf
+/Software/Domoriks_Switch/IO_test/Debug/*.list
+/Software/Domoriks_Switch/IO_test/Debug/*.map
+/Software/Domoriks_Switch/IO_test/Debug/*.mk
