@@ -29,7 +29,7 @@ PushECOToAnnotationFile=1
 DItemRevisionGUID=
 ReportSuppressedErrorsInMessages=0
 ForceUpdateCount=0
-OutputPath=
+OutputPath=Outputs
 LogFolderPath=
 ManagedProjectGUID=
 LinkedManagedProjectGUID=
@@ -130,6 +130,38 @@ DItemRevisionGUID=
 DocumentPath=Default Configuration\Outputs\NC Drill\PCB1.TXT
 DItemRevisionGUID=
 
+[GeneratedDocument11]
+DocumentPath=Default Configuration\Outputs\NC Drill\PCB.DRR
+DItemRevisionGUID=
+
+[GeneratedDocument12]
+DocumentPath=Default Configuration\Outputs\Gerber\PCB.EXTREP
+DItemRevisionGUID=
+
+[GeneratedDocument13]
+DocumentPath=Default Configuration\Outputs\DRC\PCB.html
+DItemRevisionGUID=
+
+[GeneratedDocument14]
+DocumentPath=Default Configuration\Outputs\NC Drill\PCB.LDP
+DItemRevisionGUID=
+
+[GeneratedDocument15]
+DocumentPath=Default Configuration\Outputs\Gerber\PCB.REP
+DItemRevisionGUID=
+
+[GeneratedDocument16]
+DocumentPath=Default Configuration\Outputs\Gerber\PCB.RUL
+DItemRevisionGUID=
+
+[GeneratedDocument17]
+DocumentPath=Default Configuration\Outputs\ExportSTEP\PCB.step
+DItemRevisionGUID=
+
+[GeneratedDocument18]
+DocumentPath=Default Configuration\Outputs\NC Drill\PCB.TXT
+DItemRevisionGUID=
+
 [Parameter1]
 Name=
 Value=
@@ -155,7 +187,7 @@ DocumentReferenceClass1=DocumentReference
 OutputJobFileName1=Domoriks_Switch.OutJob
 
 [Generic_EDE]
-OutputDir=
+OutputDir=Outputs
 
 [OutputGroup1]
 Name=Netlist Outputs
