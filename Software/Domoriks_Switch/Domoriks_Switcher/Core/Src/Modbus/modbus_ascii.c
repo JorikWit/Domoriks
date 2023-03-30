@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "main.h"
+
 #define MODBUS_ASCII_START_BYTE 0x3A  // ASCII ':'
 #define MODBUS_ASCII_END_BYTE 0x0D  // ASCII CR
 #define MODBUS_ASCII_LRC_BYTE 0x2A  // ASCII '*'

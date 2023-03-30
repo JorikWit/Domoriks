@@ -40,7 +40,7 @@ PrefsVaultGUID=
 PrefsRevisionGUID=
 
 [Document1]
-DocumentPath=Sheet.SchDoc
+DocumentPath=MainSheet.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=100
 AnnotationIndexControlEnabled=1
@@ -57,7 +57,7 @@ GenerateClassCluster=0
 DocumentUniqueId=KICXFGPD
 
 [Document2]
-DocumentPath=PCB1.CSPcbDoc
+DocumentPath=PCB.CSPcbDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -91,56 +91,56 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [GeneratedDocument1]
-DocumentPath=Default Configuration\Outputs\BOM\BOM_PartType-Domoriks_Switch.xls
+DocumentPath=Outputs\Design Rule Check - PCB.html
 DItemRevisionGUID=
 
 [GeneratedDocument2]
-DocumentPath=Outputs\Design Rule Check - PCB1.html
-DItemRevisionGUID=
-
-[GeneratedDocument3]
 DocumentPath=Default Configuration\Outputs\ERC\Domoriks_Switch.html
 DItemRevisionGUID=
 
-[GeneratedDocument4]
+[GeneratedDocument3]
 DocumentPath=Default Configuration\Outputs\NC Drill\PCB1.DRR
 DItemRevisionGUID=
 
-[GeneratedDocument5]
+[GeneratedDocument4]
 DocumentPath=Default Configuration\Outputs\Gerber\PCB1.EXTREP
 DItemRevisionGUID=
 
-[GeneratedDocument6]
+[GeneratedDocument5]
 DocumentPath=Default Configuration\Outputs\DRC\PCB1.html
 DItemRevisionGUID=
 
-[GeneratedDocument7]
+[GeneratedDocument6]
 DocumentPath=Default Configuration\Outputs\NC Drill\PCB1.LDP
 DItemRevisionGUID=
 
-[GeneratedDocument8]
+[GeneratedDocument7]
 DocumentPath=Default Configuration\Outputs\Gerber\PCB1.REP
 DItemRevisionGUID=
 
-[GeneratedDocument9]
+[GeneratedDocument8]
 DocumentPath=Default Configuration\Outputs\Gerber\PCB1.RUL
 DItemRevisionGUID=
 
-[GeneratedDocument10]
+[GeneratedDocument9]
 DocumentPath=Default Configuration\Outputs\ExportSTEP\PCB1.step
 DItemRevisionGUID=
 
-[GeneratedDocument11]
+[GeneratedDocument10]
 DocumentPath=Default Configuration\Outputs\NC Drill\PCB1.TXT
 DItemRevisionGUID=
 
 [Parameter1]
-Name=Project
-Value=Domoriks
+Name=
+Value=
 
 [Parameter2]
 Name=Version
-Value=v1.1
+Value=v2.1
+
+[Parameter3]
+Name=Project
+Value=Domoriks
 
 [Configuration1]
 Name=Default Configuration
@@ -160,7 +160,7 @@ OutputDir=
 [OutputGroup1]
 Name=Netlist Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=EDIF
 OutputName1=EDIF for PCB
@@ -169,12 +169,22 @@ OutputVariantName1=
 OutputDefault1=0
 Configuration1_Name1=OutputConfigurationParameter1
 Configuration1_Item1=NetlistVersion=0|Record=EdifView
+OutputType2=XSpiceNetlist
+OutputName2=XSpice Netlist
+OutputDocumentPath2=
+OutputVariantName2=
+OutputDefault2=0
 
 [OutputGroup2]
 Name=Simulator Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
+OutputType1=AdvSimNetlist
+OutputName1=Mixed Sim
+OutputDocumentPath1=
+OutputVariantName1=
+OutputDefault1=0
 
 [OutputGroup3]
 Name=Documentation Outputs
@@ -251,7 +261,7 @@ PageOptions11=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|Print
 [OutputGroup4]
 Name=Assembly Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=Assembly
 OutputName1=Assembly Drawings
@@ -268,7 +278,7 @@ OutputDefault2=0
 [OutputGroup5]
 Name=Fabrication Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=Board Stack Report
 OutputName1=Report Board Stack
@@ -324,7 +334,7 @@ PageOptions9=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintS
 [OutputGroup6]
 Name=Report Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=BOM_PartType
 OutputName1=Bill of Materials
@@ -356,7 +366,7 @@ OutputDefault5=0
 [OutputGroup7]
 Name=Other Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=Text Print
 OutputName1=Text Print
@@ -536,7 +546,7 @@ PageOptions29=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|Print
 [OutputGroup8]
 Name=Validation Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=Electrical Rules Check
 OutputName1=Electrical Rules Check
@@ -572,7 +582,7 @@ PageOptions5=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintS
 [OutputGroup9]
 Name=Export Outputs
 Description=
-TargetPrinter=Canon MG4200 series Printer WS
+TargetPrinter=Konica Minolta C258
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintWhat=1
 OutputType1=ExportSTEP
 OutputName1=Export STEP

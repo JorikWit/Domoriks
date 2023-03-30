@@ -36,7 +36,7 @@ uint8_t cmd_coil_read(uint16_t addr_data, uint16_t data) {
 	for (uint16_t i = 0; i++; i<data){
 		char response[20];
 		//my_slave_id + funct + length (voorlopig altijd 1?)
-		sprintf(response, ":%d%d0101", slave_high_char, slave_low_char);
+		//sprintf(response, ":%d%d0101", slave_high_char, slave_low_char);
 	}
 	return 0;
 }

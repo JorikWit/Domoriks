@@ -48,16 +48,17 @@ void printTime() {
 
 int prevSeconds = 0;
 bool oneSecondPassed() {
-  if (prevSeconds != (int) Controllino_GetSecond()) {
-    prevSeconds = (int) Controllino_GetSecond();
+  if (prevSeconds != (int)Controllino_GetSecond()) {
+    prevSeconds = (int)Controllino_GetSecond();
     return 1;
   }
   return 0;
 }
 
+
+
 void setup() {
   Serial.begin(9600);
-
   //watchdog
   wdt_enable(WDTO_4S);
 
@@ -104,12 +105,12 @@ void setup() {
   //   Serial.println("Hi mqtt, nice to cu my friend!");
   // else
   //   Serial.println("Mqtt, is no longer friendly");
-
-
-  // RS485
-  //Controllino_RS485Init(9600);
-  //Controllino_RS485RxEnable();
-  //Serial.println("Recieving RS485...");
+  pinMode(CONTROLLINO_R10, OUTPUT);
+  pinMode(CONTROLLINO_R11, OUTPUT);
+  //RS485
+  Controllino_RS485Init(9600);
+  Controllino_RS485RxEnable();
+  Serial.println("Recieving RS485...");
 }
 
 //Rs485
@@ -117,6 +118,9 @@ uint8_t incomingByte = 0;   // for incoming serial data
 //Modbus
 uint8_t modbusCommandBuffer[100];
 int modbusBufferindex = 0;
+
+bool toggleLamp1 = false;
+bool toggleLamp2 = false;
 
 void loop() {
 
@@ -129,39 +133,63 @@ void loop() {
     //Detect Start message
     if (incomingByte == ':') {
       modbusBufferindex = 0;
+      Serial.print("start : ");
     }
 
+    Serial.print(incomingByte);
+    modbusCommandBuffer[modbusBufferindex] = incomingByte;
+    modbusBufferindex++;
     //Detect End message
-    if (incomingByte == 0x0D && modbusCommandBuffer[modbusBufferindex-1] == 0x0A) {
+    //if (incomingByte == '\n') {// && (modbusCommandBuffer[modbusBufferindex - 1] == 0x0A)) {
       //Read output
-
-
+    Serial.println();
+    Serial.print("Command: ");
+    Serial.println(modbusCommandBuffer[1]);
+    if (modbusCommandBuffer[1] == 49) {
+      toggleLamp1 = !toggleLamp1;
+      digitalWrite(CONTROLLINO_R11, toggleLamp1);
+      Serial.println("lamp1");
+      modbusCommandBuffer[1] = 0;
     }
 
+    if (modbusCommandBuffer[1] == 50) {
+      toggleLamp2 = !toggleLamp2;
+      digitalWrite(CONTROLLINO_R10, toggleLamp2);
+      Serial.println("lamp2");
+      modbusCommandBuffer[1] = 0;
+    }
 
-
+    if (modbusCommandBuffer[1] == 51) {
+      toggleLamp1 = !toggleLamp1;
+      digitalWrite(CONTROLLINO_R11, toggleLamp1);
+      Serial.println("lamp1");
+      toggleLamp2 = !toggleLamp2;
+      digitalWrite(CONTROLLINO_R10, toggleLamp2);
+      Serial.println("lamp2");
+      modbusCommandBuffer[1] = 0;
+    }
+    //}
   }
-
-    // char incomingChar = (char) incomingByte;
-    // if (incomingByte == 4 ) {
-    //   Serial.println();
-    // }
-    // else if (incomingByte != 0) {
-    //   Serial.print(incomingChar);
-    // }
-
-
-  // Ethernet.maintain();
-  // mqtt.loop();
-  //
-  // // //Triggers every second
-  // if (oneSecondPassed()) {
-  //   blink();
-  //   printTime();
+  // char incomingChar = (char) incomingByte;
+  // if (incomingByte == 4 ) {
+  //   Serial.println();
   // }
-  // //
+  // else if (incomingByte != 0) {
+  //   Serial.print(incomingChar);
+  // }
 
-  //feed the dog
-  // while (true); //make the dog angry
+
+// Ethernet.maintain();
+// mqtt.loop();
+//
+// // //Triggers every second
+// if (oneSecondPassed()) {
+//   blink();
+//   printTime();
+// }
+// //
+
+//feed the dog
+// while (true); //make the dog angry
   wdt_reset();
 }

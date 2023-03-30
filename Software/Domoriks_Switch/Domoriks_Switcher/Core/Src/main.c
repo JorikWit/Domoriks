@@ -22,8 +22,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "IO/inputs.h"
+#include <stdbool.h>
+#include <stdint.h>
 
+#include "IO/inputs.h"
 #include "IO/outputs.h"
 /* USER CODE END Includes */
 
@@ -95,19 +97,95 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  bool b1_pushed = true;
+  bool b2_pushed = true;
+  bool b3_pushed = true;
+  bool b4_pushed = true;
+  bool b5_pushed = true;
+  bool b6_pushed = true;
+
+  HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  update_inputs();
+	  //update_inputs();
+	  if (!HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin)) {
+		  b1_pushed = true;
+		  HAL_Delay(300);
+	  } else {
+		  if (b1_pushed) {
+			b1_pushed = false;
+			const char *mesg = ":1\n";
+			HAL_UART_Transmit(&huart1, (uint8_t*)mesg, 3, (uint16_t) (3 * 2) / (huart1.Init.BaudRate));
+			HAL_Delay(300);
+		  }
+	  }
 
-	  modbus_handler();
+
+	  if (!HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin)) {
+		  b2_pushed = true;
+		  HAL_Delay(300);
+	  } else {
+		  if (b2_pushed) {
+			b2_pushed = false;
+			const char *mesg = ":2\n";
+			HAL_UART_Transmit(&huart1, (uint8_t*)mesg, 3, (uint16_t) (3 * 2) / (huart1.Init.BaudRate));
+			HAL_Delay(300);
+		  }
+	  }
+
+	  if (!HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin)) {
+		  b3_pushed = true;
+		  HAL_Delay(300);
+	  } else {
+		  if (b3_pushed) {
+			b3_pushed = false;
+			const char *mesg = ":3\n";
+			HAL_UART_Transmit(&huart1, (uint8_t*)mesg, 3, (uint16_t) (3 * 2) / (huart1.Init.BaudRate));
+			HAL_Delay(300);
+		  }
+	  }
+
+	  if (!HAL_GPIO_ReadPin(B4_GPIO_Port, B4_Pin)) {
+		  b4_pushed = true;
+	  } else {
+		  if (b4_pushed) {
+			b4_pushed = false;
+			const char *mesg = ":4\n";
+			HAL_UART_Transmit(&huart1, (uint8_t*)mesg, 3, (uint16_t) (3 * 2) / (huart1.Init.BaudRate));
+			HAL_Delay(300);
+		  }
+	  }
+
+	  if (!HAL_GPIO_ReadPin(B5_GPIO_Port, B5_Pin)) {
+		  b5_pushed = true;
+	  } else {
+		  if (b5_pushed) {
+			b5_pushed = false;
+			const char *mesg = ":5\n";
+			HAL_UART_Transmit(&huart1, (uint8_t*)mesg, 3, (uint16_t) (3 * 2) / (huart1.Init.BaudRate));
+			HAL_Delay(300);
+		  }
+	  }
+
+	  if (!HAL_GPIO_ReadPin(B6_GPIO_Port, B6_Pin)) {
+		  b6_pushed = true;
+	  } else {
+		  if (b6_pushed) {
+			b6_pushed = false;
+			const char *mesg = ":6\n";
+			HAL_UART_Transmit(&huart1, (uint8_t*)mesg, 3, (uint16_t) (3 * 2) / (huart1.Init.BaudRate));
+			HAL_Delay(300);
+		  }
+	  }
+	  //modbus_handler();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  update_outputs();
+	  //update_outputs();
   }
   /* USER CODE END 3 */
 }

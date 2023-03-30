@@ -18,6 +18,11 @@ uint8_t read_di(InputParam *param) {
 	return 0;
 }
 
+uint8_t read_inv_di(InputParam *param) {
+	param->value = (uint8_t) !HAL_GPIO_ReadPin((GPIO_TypeDef *)param->port, param->pin);
+	return 0;
+}
+
 Input inputs[INPUTS_SIZE] = {
 //		{{pin,    port,             value,min,max} init_func, update_func}
 		{{B1_Pin,(const int)B1_GPIO_Port,0,0,1}, &init_di, &read_di},
