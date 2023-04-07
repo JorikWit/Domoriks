@@ -1,0 +1,64 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/include",
+                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/src",
+                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/home-assistant-integration/src",
+                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/PubSubClient/src",
+                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/Ethernet/src",
+                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/CONTROLLINO",
+                "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/variants/Controllino_mega",
+                "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/include",
+                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/src",
+                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/home-assistant-integration/src",
+                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/PubSubClient/src",
+                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/Ethernet/src",
+                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/CONTROLLINO",
+                    "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/variants/Controllino_mega",
+                    "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60105",
+                "ARDUINO_AVR_MEGA2560",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega2560__",
+                ""
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "C:/Users/Jorik Wittevrongel/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerArgs": [
+                "-mmcu=atmega2560",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
