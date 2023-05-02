@@ -1,10 +1,12 @@
+/* USER CODE BEGIN Header */
+/**
   ******************************************************************************
   * @file           : main.c
   * @brief          : Main program body
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2023 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -37,7 +39,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
@@ -93,19 +95,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_Delay(200);
-	  if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
-		  HAL_GPIO_TogglePin(L1_GPIO_Port, L1_Pin);
-	  if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin))
-		  HAL_GPIO_TogglePin(L2_GPIO_Port, L2_Pin);
-	  if (HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin))
-		  HAL_GPIO_TogglePin(L3_GPIO_Port, L3_Pin);
-	  if (HAL_GPIO_ReadPin(B4_GPIO_Port, B4_Pin))
-		  HAL_GPIO_TogglePin(L4_GPIO_Port, L4_Pin);
-	  if (HAL_GPIO_ReadPin(B5_GPIO_Port, B5_Pin))
-		  HAL_GPIO_TogglePin(L5_GPIO_Port, L5_Pin);
-	  if (HAL_GPIO_ReadPin(B6_GPIO_Port, B6_Pin))
-		  HAL_GPIO_TogglePin(L6_GPIO_Port, L6_Pin);
+	  for (int i = 0; i < 10; i++){
+		  HAL_Delay(200);
+		  if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin))
+			  HAL_GPIO_TogglePin(L1_GPIO_Port, L1_Pin);
+		  if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin))
+			  HAL_GPIO_TogglePin(L2_GPIO_Port, L2_Pin);
+		  if (HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin))
+			  HAL_GPIO_TogglePin(L3_GPIO_Port, L3_Pin);
+		  if (HAL_GPIO_ReadPin(B4_GPIO_Port, B4_Pin))
+			  HAL_GPIO_TogglePin(L4_GPIO_Port, L4_Pin);
+		  if (HAL_GPIO_ReadPin(B5_GPIO_Port, B5_Pin))
+			  HAL_GPIO_TogglePin(L5_GPIO_Port, L5_Pin);
+		  if (HAL_GPIO_ReadPin(B6_GPIO_Port, B6_Pin))
+			  HAL_GPIO_TogglePin(L6_GPIO_Port, L6_Pin);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -222,13 +226,6 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, L1_Pin|L2_Pin|L3_Pin|L4_Pin
                           |L5_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : L6_Pin */
-  GPIO_InitStruct.Pin = L6_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(L6_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pins : B1_Pin B2_Pin B3_Pin B4_Pin
                            B5_Pin B6_Pin */
   GPIO_InitStruct.Pin = B1_Pin|B2_Pin|B3_Pin|B4_Pin
@@ -245,6 +242,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : L6_Pin */
+  GPIO_InitStruct.Pin = L6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(L6_GPIO_Port, &GPIO_InitStruct);
+
 
 }
 
