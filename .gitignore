@@ -696,3 +696,7 @@ Default Configuration
 History
 Logs
 __Previews
+/Software/Modbus/modbus_decode.h
+/Software/Modbus/modbus_decode.c
+.metadata
+Debug
