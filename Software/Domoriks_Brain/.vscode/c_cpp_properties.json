@@ -8,12 +8,12 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/include",
-                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/src",
-                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/home-assistant-integration/src",
-                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/PubSubClient/src",
-                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/Ethernet/src",
-                "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/CONTROLLINO",
+                "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/include",
+                "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/src",
+                "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/home-assistant-integration/src",
+                "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/PubSubClient/src",
+                "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/Ethernet/src",
+                "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/CONTROLLINO",
                 "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                 "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/variants/Controllino_mega",
@@ -26,12 +26,12 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/include",
-                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/src",
-                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/home-assistant-integration/src",
-                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/PubSubClient/src",
-                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/Ethernet/src",
-                    "c:/Users/Jorik Wittevrongel/NoOnedrive/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/CONTROLLINO",
+                    "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/include",
+                    "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/src",
+                    "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/home-assistant-integration/src",
+                    "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/PubSubClient/src",
+                    "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/Ethernet/src",
+                    "c:/Users/Jorik Wittevrongel/LocalProjects/960-Domoriks/Domoriks/Software/Domoriks_Brain/.pio/libdeps/controllino_mega/CONTROLLINO",
                     "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                     "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/Jorik Wittevrongel/.platformio/packages/framework-arduino-avr/variants/Controllino_mega",
@@ -43,7 +43,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60105",
+                "PLATFORMIO=60107",
                 "ARDUINO_AVR_MEGA2560",
                 "F_CPU=16000000L",
                 "ARDUINO_ARCH_AVR",

@@ -2,10 +2,10 @@
  * File:   modbus_decode.c
  * Author: Jorik Wittevrongel
  *
- * Created on December 20 2022, 19:02
+ * Created on December 20 2022
  */
 
-#include "modbus_decode.h"
+#include "modbus_ascii.h"
 
 uint8_t calculate_lrc(const uint8_t* data, size_t length)
 {
@@ -18,7 +18,7 @@ uint8_t calculate_lrc(const uint8_t* data, size_t length)
 }
 
 // Decode Modbus ASCII message
-uint8_t decode_modbus_ASCII(char* message, ModbusASCIIMessage* decoded) {
+uint8_t decode_modbus_ascii(char* message, ModbusMessage* decoded) {
     // Check for start and end bytes
     if (message[0] != ':' || message[strlen(message) - 1] != '\r') {
         return -1;  // Invalid message
@@ -39,8 +39,6 @@ uint8_t decode_modbus_ASCII(char* message, ModbusASCIIMessage* decoded) {
     }
 
     //Parse message
-    decoded->lrc = bin_message[length - 1];
-
     decoded->slave_address = bin_message[0];
     decoded->function_code = bin_message[1];
 
@@ -51,4 +49,24 @@ uint8_t decode_modbus_ASCII(char* message, ModbusASCIIMessage* decoded) {
 
     //Return
     return 0;  // Success
+}
+
+uint8_t encode_modbus_ascii(char* encoded, ModbusMessage* message) {
+    int i = 0;
+    encoded[i++] = ':';
+    sprintf(&encoded[i++], "%02X", message->slave_address);
+    i++;
+    sprintf(&encoded[i++], "%02X", message->function_code);
+    i++;
+    for (int j = 0; j < message->data_length; j++) {
+        sprintf(&encoded[i++], "%02X", message->data[j]);
+        i++;
+    }
+    sprintf(&encoded[i++], "%02X", calculate_lrc((uint8_t*)message, message->data_length + 2));
+    i++;
+    encoded[i++] = '\r';
+    encoded[i++] = '\n';
+    encoded[i] = 0x00;
+
+    return 0;
 }

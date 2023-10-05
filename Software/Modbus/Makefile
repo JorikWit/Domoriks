@@ -2,4 +2,4 @@
 #Not needed in VS code
 
 all:	#target name (debug _ release)?
-	gcc main.c modbus_handler.c modbus_decode.c -o main.exe -lm
+	gcc main.c modbus_ascii.c modbus_rtu.c modbusm_handler.c -o main.exe -lm

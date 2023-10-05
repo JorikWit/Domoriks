@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include <Controllino.h>
 
-#include<avr/wdt.h>
+#include <avr/wdt.h>
 
 #include <SPI.h>
-#include <Ethernet.h>
+#include <Ethernet.h> 
 
 #include <ArduinoHA.h>
 
@@ -13,7 +13,7 @@ byte mac[] = { 0x62, 0x75, 0x6E, 0x6E, 0x79, 0x69 };
 byte ip[] = { 192, 168, 0, 50 };
 
 //HASS
-#define BROKER_ADDR     IPAddress(192,168,0,69)
+#define BROKER_ADDR IPAddress(192,168,0,69)
 
 EthernetClient client;
 HADevice device(mac, sizeof(mac));
@@ -54,8 +54,6 @@ bool oneSecondPassed() {
   }
   return 0;
 }
-
-
 
 void setup() {
   Serial.begin(9600);
@@ -105,8 +103,10 @@ void setup() {
   //   Serial.println("Hi mqtt, nice to cu my friend!");
   // else
   //   Serial.println("Mqtt, is no longer friendly");
-  pinMode(CONTROLLINO_R10, OUTPUT);
-  pinMode(CONTROLLINO_R11, OUTPUT);
+  pinMode(CONTROLLINO_R0, OUTPUT);
+  pinMode(CONTROLLINO_R1, OUTPUT);
+  pinMode(CONTROLLINO_R2, OUTPUT);
+
   //RS485
   Controllino_RS485Init(9600);
   Controllino_RS485RxEnable();
@@ -119,16 +119,16 @@ uint8_t incomingByte = 0;   // for incoming serial data
 uint8_t modbusCommandBuffer[100];
 int modbusBufferindex = 0;
 
+bool toggleLamp0 = false;
 bool toggleLamp1 = false;
 bool toggleLamp2 = false;
 
 void loop() {
-
   // RS485
   //Custom modbus
-  if (Serial3.available() > 0)
+  if (Serial.available() > 0)
   {
-    incomingByte = Serial3.read();
+    incomingByte = Serial.read();
 
     //Detect Start message
     if (incomingByte == ':') {
@@ -145,26 +145,25 @@ void loop() {
     Serial.println();
     Serial.print("Command: ");
     Serial.println(modbusCommandBuffer[1]);
-    if (modbusCommandBuffer[1] == 49) {
+
+
+    if (modbusCommandBuffer[1] == '0') {
+      toggleLamp0 = !toggleLamp0;
+      digitalWrite(CONTROLLINO_R0, toggleLamp0);
+      Serial.println("lamp0");
+      modbusCommandBuffer[1] = 0;
+    }
+
+    if (modbusCommandBuffer[1] == '1') {
       toggleLamp1 = !toggleLamp1;
-      digitalWrite(CONTROLLINO_R11, toggleLamp1);
+      digitalWrite(CONTROLLINO_R1, toggleLamp1);
       Serial.println("lamp1");
       modbusCommandBuffer[1] = 0;
     }
 
-    if (modbusCommandBuffer[1] == 50) {
+    if (modbusCommandBuffer[1] == '2') {
       toggleLamp2 = !toggleLamp2;
-      digitalWrite(CONTROLLINO_R10, toggleLamp2);
-      Serial.println("lamp2");
-      modbusCommandBuffer[1] = 0;
-    }
-
-    if (modbusCommandBuffer[1] == 51) {
-      toggleLamp1 = !toggleLamp1;
-      digitalWrite(CONTROLLINO_R11, toggleLamp1);
-      Serial.println("lamp1");
-      toggleLamp2 = !toggleLamp2;
-      digitalWrite(CONTROLLINO_R10, toggleLamp2);
+      digitalWrite(CONTROLLINO_R2, toggleLamp2);
       Serial.println("lamp2");
       modbusCommandBuffer[1] = 0;
     }
