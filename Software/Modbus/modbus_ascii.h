@@ -22,5 +22,6 @@
 
 uint8_t encode_modbus_ascii(char* encoded, ModbusMessage* message);
 uint8_t decode_modbus_ascii(char* message, ModbusMessage* decoded);
+uint8_t print_modbus_ascii(ModbusMessage* message);
 
 #endif /* MODBUS_ASCII_H */

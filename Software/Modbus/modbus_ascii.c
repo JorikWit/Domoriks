@@ -70,3 +70,16 @@ uint8_t encode_modbus_ascii(char* encoded, ModbusMessage* message) {
 
     return 0;
 }
+
+//MOVE to seperate lib/file. no outputs here
+
+uint8_t print_modbus_ascii(ModbusMessage* message) {
+    uint8_t encoded[100];
+    size_t length;
+
+    encode_modbus_ascii(encoded, message);
+
+    printf("%s", encoded);
+
+    return 0;
+}

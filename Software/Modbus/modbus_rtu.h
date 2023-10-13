@@ -18,5 +18,6 @@
 
 uint8_t encode_modbus_rtu(uint8_t* encoded, size_t* length, ModbusMessage* message);
 uint8_t decode_modbus_rtu(uint8_t* message, size_t length, ModbusMessage* decoded);
+uint8_t print_modbus_rtu(ModbusMessage* message);
 
 #endif /* MODBUS_RTU_H */

@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "modbusmessage.h": "c",
-        "modbus_ascii.h": "c"
+        "modbus_ascii.h": "c",
+        "modbusm_handler.h": "c",
+        "compare": "c",
+        "cstdint": "c",
+        "modbus_rtu.h": "c"
     }
 }

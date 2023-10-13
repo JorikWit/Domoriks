@@ -7,7 +7,7 @@
 
 #include "modbus_rtu.h"
 
-uint16_t calculate_crc(const uint8_t* data, size_t length) {
+uint16_t calculate_crc(const uint8_t* data, size_t length) {  //it is possible to make this faster with lookup tables
     uint16_t crc = 0xFFFF;
     for (uint8_t i = 0; i < length; i++) {
         crc ^= (uint16_t)data[i];
@@ -62,4 +62,18 @@ uint8_t encode_modbus_rtu(uint8_t* encoded, size_t* length, ModbusMessage* messa
 
     //Return
     return 0;  // Success
+}
+
+//MOVE to seperate lib/file. no outputs here
+
+uint8_t print_modbus_rtu(ModbusMessage* message) {
+    uint8_t encoded[100];
+    size_t length;
+
+    encode_modbus_rtu(encoded, &length, message);
+    for (int i = 0; i < length; i++)
+        printf("0x%02X, ", encoded[i]);
+    printf("\n");
+
+    return 0;
 }
