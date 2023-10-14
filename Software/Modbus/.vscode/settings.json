@@ -5,6 +5,7 @@
         "modbusm_handler.h": "c",
         "compare": "c",
         "cstdint": "c",
-        "modbus_rtu.h": "c"
+        "modbus_rtu.h": "c",
+        "modbusm.h": "c"
     }
 }

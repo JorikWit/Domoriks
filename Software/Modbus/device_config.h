@@ -10,8 +10,9 @@
 
 #define DEVICE_ID 1
 
-#define MAX_COILS 256
-#define MAX_INPUTS 256
+#define MAX_COILS 16
+#define MAX_INPUTS 16
+
 #define MAX_HOLD_REGS 64
 #define MAX_INPUTS_REGS 64
 

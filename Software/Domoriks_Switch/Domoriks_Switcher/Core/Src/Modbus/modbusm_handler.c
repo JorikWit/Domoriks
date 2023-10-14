@@ -5,7 +5,7 @@
  * Created on October 5 2023
  */
 
-#include "modbusm_handler.h"
+#include "Modbus/modbusm_handler.h"
 
  /*
 
@@ -42,7 +42,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
 
     //handle message
     switch (message->function_code) {
-    case READ_COILS:
+    case READ_COILS: ;
         //parse
         uint16_t first_coil = 0;
         uint16_t amount_coils = 0;
@@ -71,10 +71,10 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         for (int i = 1; i < message->data_length; i++) {
             uint8_t currentB = *(modbusCoils + ((first_coil / 8) + (i - 1)));
             uint8_t nextB = *(modbusCoils + ((first_coil / 8) + (i)));
-            *(message->data + i) = (nextB << 8 - (first_coil % 8) | currentB >> (first_coil % 8));
+            *(message->data + i) = (nextB << (8 - (first_coil % 8)) | currentB >> (first_coil % 8));
         }
         break;
-    case READ_DISC_INPUTS:
+    case READ_DISC_INPUTS: ;
         //parse
         uint16_t first_input = 0;
         uint16_t amount_inputs = 0;
@@ -96,10 +96,10 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         for (int i = 1; i < message->data_length; i++) {
             uint8_t currentB = *(modbusInputs + ((first_input / 8) + (i - 1)));
             uint8_t nextB = *(modbusInputs + ((first_input / 8) + (i)));
-            *(message->data + i) = (nextB << 8 - (first_input % 8) | currentB >> (first_input % 8));
+            *(message->data + i) = ( ((nextB << 8) - (first_input % 8)) | (currentB >> (first_input % 8)) );
         }
         break;
-    case READ_HOLD_REGS:
+    case READ_HOLD_REGS: ;
         //parse
         uint16_t first_hreg = 0;
         uint16_t amount_hregs = 0;
@@ -123,7 +123,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + (i * 2) - 1) = *(modbusHReg + i - 1 + first_hreg);
         }
         break;
-    case READ_INPUT_REGS:
+    case READ_INPUT_REGS: ;
         //parse
         uint16_t first_ireg = 0;
         uint16_t amount_iregs = 0;
@@ -145,7 +145,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + (i * 2) - 1) = *(modbusIReg + i - 1 + first_ireg);
         }
         break;
-    case WRITE_SINGLE_COIL:
+    case WRITE_SINGLE_COIL: ;
         //parse
         uint16_t coil_adress = 0;
         uint16_t value = 0;
@@ -172,7 +172,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
         message = message; //echo message
         break;
-    case WRITE_SINGLE_REG:       //   <- Tis only apply for holding regs
+    case WRITE_SINGLE_REG: ;      //   <- Tis only apply for holding regs
         //parse
         uint16_t reg_adress = 0;
         if (message->data_length == 4) {

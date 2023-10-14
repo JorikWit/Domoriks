@@ -38,15 +38,22 @@
 //5
 // char message[100] = ":01050000FF00FB\r";
 // uint8_t message_rtu[8] = { 0x01, 0x05, 0x00, 0x00, 0xFF, 0x00, 0x8C, 0x3A };
-char message[100] = ":010500030000F7\r";
-uint8_t message_rtu[8] = { 0x01, 0x05, 0x00, 0x03, 0x00, 0x00, 0x3D, 0xCA };
+// char message[100] = ":010500030000F7\r";
+// uint8_t message_rtu[8] = { 0x01, 0x05, 0x00, 0x03, 0x00, 0x00, 0x3D, 0xCA };
 // char message[100] = ":01050005FF00F6\r";
 // uint8_t message_rtu[8] = { 0x01, 0x05, 0x00, 0x05, 0xFF, 0x00, 0x9C, 0x3B };
 
-uint8_t coils[16] = { 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-uint8_t inputs[16] = { 0x00, 0xFF, 0x00, 0x00, 0x9A, 0xBC, 0xCE, 0xF0 };
-uint16_t hold_reg[16] = { 0x1234, 0x5678, 0x9ABC, 0xDEF0, 0x1122, 0x3344, 0x5566, 0x7788 };
-uint16_t i_reg[16] = { 0x1234, 0x5678, 0x9ABC, 0xDEF0, 0x1122, 0x3344, 0x5566, 0x7788 };
+//6
+// char message[100] = ":010600000000F9\r";
+// uint8_t message_rtu[8] = { 0x01, 0x06, 0x00, 0x00, 0x00, 0x00, 0x89, 0xCA };
+char message[100] = ":010600000000F9\r";
+uint8_t message_rtu[8] = { 0x01, 0x06, 0x00, 0x02, 0xFF, 0x00, 0x69, 0xFA };
+
+
+uint8_t coils[MAX_COILS / 8] = { 0xFF, 0xFF };
+uint8_t inputs[MAX_INPUTS / 8] = { 0x00, 0xFF };
+uint16_t hold_reg[MAX_HOLD_REGS] = { 0x1234, 0x5678, 0x9ABC, 0xDEF0, 0x1122, 0x3344, 0x5566, 0x7788 };
+uint16_t i_reg[MAX_INPUTS_REGS] = { 0x1234, 0x5678, 0x9ABC, 0xDEF0, 0x1122, 0x3344, 0x5566, 0x7788 };
 
 int main() {
   modbusCoils = coils;
@@ -58,9 +65,9 @@ int main() {
   printf("NEW MESSAGE\n");
   ModbusMessage newMessage;
   newMessage.slave_address = DEVICE_ID;
-  newMessage.function_code = 5;
+  newMessage.function_code = 6;
   newMessage.data_length = 4;
-  uint8_t d[4] = { 0x00, 0x05, 0xFF, 0x00 };
+  uint8_t d[4] = { 0x00, 0x02, 0xFF, 0x00 };
   for (int i = 0; i < 4; i++) newMessage.data[i] = d[i];
   //print
   print_modbus_rtu(&newMessage);
@@ -102,18 +109,21 @@ int main() {
     print_modbus_ascii(&decoded);
     printf("\n");
   }
-  else if (ID_MISMATCH) {
-    printf("Wrong slave address\n\n");
-  }
-  else if (INVALID_DATA_LENGHT) {
-    printf("Wrong message size\n\n");
-  }
-  else if (INVALID_COIL_VALUE) {
-    printf("Wrong coilvalue size\n\n");
-  }
+  else if (ID_MISMATCH) printf("Wrong slave address\n\n");
+  else if (INVALID_DATA_LENGHT) printf("Wrong message size\n\n");
+  else if (INVALID_COIL_VALUE) printf("Wrong coilvalue size\n\n");
+  else if (INVALID_FUNCTION) printf("Wrong function code\n\n");
+  else if (NOT_IMPLEMENTED) printf("Function '%02X' not implemented yet", decoded.function_code);
 
-
-  printf("COILS: %02X", *coils);
+  printf("COILS: ");
+  for (int i = 0; i < MAX_COILS / 8; i++)
+    printf("%02X ", *(coils + i));
+  printf("\n");
+  printf("HOLD REGS: ");
+  for (int i = 0; i < MAX_HOLD_REGS; i++)
+    if (*(hold_reg + i) != 0) printf("%04X ", *(hold_reg + i));
+    else printf("0 ");
+  printf("\n");
   return 0;
 }
 

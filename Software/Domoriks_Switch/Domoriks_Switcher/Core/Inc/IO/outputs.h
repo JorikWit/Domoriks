@@ -2,11 +2,13 @@
  * File:   outputs.h
  * Author: Jorik Wittevrongel
  *
- * Created on December 20 2022, 19:02
+ * Created on December 20 2022
  */
 
 #ifndef OUTPUTS_H
 #define	OUTPUTS_H
+
+#include "main.h"
 
 typedef struct {             //Combine with Inputparam in IO param
 	uint16_t pin;

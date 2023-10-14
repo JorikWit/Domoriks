@@ -1,16 +1,27 @@
+/*
+ * File:   modbus_decode.h
+ * Author: Jorik Wittevrongel
+ *
+ * Created on December 20 2022
+ */
 
+#ifndef MODBUS_ASCII_H
+#define MODBUS_ASCII_H
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <inttypes.h>
+
+#include "modbusm.h"
 
 #define MODBUS_ASCII_START_BYTE 0x3A  // ASCII ':'
 #define MODBUS_ASCII_END_BYTE 0x0D  // ASCII CR
 #define MODBUS_ASCII_LRC_BYTE 0x2A  // ASCII '*'
 
-// Structure to hold decoded Modbus ASCII message
-typedef struct {
-  int slave_address;
-  int function_code;
-  int data[256];
-  int data_length;
-  int lrc;
-} ModbusASCIIMessage;
+uint8_t encode_modbus_ascii(char* encoded, ModbusMessage* message);
+uint8_t decode_modbus_ascii(char* message, ModbusMessage* decoded);
+uint8_t print_modbus_ascii(ModbusMessage* message);
 
-int decodeModbusASCII(char *message, ModbusASCIIMessage *decoded);
+#endif /* MODBUS_ASCII_H */
