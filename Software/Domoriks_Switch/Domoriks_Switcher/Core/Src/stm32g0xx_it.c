@@ -22,6 +22,7 @@
 #include "stm32g0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "timer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,6 +56,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern TIM_HandleTypeDef htim14;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 /* USER CODE BEGIN EV */
 
@@ -155,17 +157,17 @@ void DMA1_Channel1_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA1 channel 4, channel 5 and DMAMUX1 interrupts.
+  * @brief This function handles TIM14 global interrupt.
   */
-void DMA1_Ch4_5_DMAMUX1_OVR_IRQHandler(void)
+void TIM14_IRQHandler(void)
 {
-  /* USER CODE BEGIN DMA1_Ch4_5_DMAMUX1_OVR_IRQn 0 */
+  /* USER CODE BEGIN TIM14_IRQn 0 */
+  GLOBAL_TIMER_TICK();
+  /* USER CODE END TIM14_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim14);
+  /* USER CODE BEGIN TIM14_IRQn 1 */
 
-  /* USER CODE END DMA1_Ch4_5_DMAMUX1_OVR_IRQn 0 */
-
-  /* USER CODE BEGIN DMA1_Ch4_5_DMAMUX1_OVR_IRQn 1 */
-
-  /* USER CODE END DMA1_Ch4_5_DMAMUX1_OVR_IRQn 1 */
+  /* USER CODE END TIM14_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

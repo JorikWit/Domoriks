@@ -15,8 +15,8 @@
   *
   ******************************************************************************
   */
-  /* USER CODE END Header */
-  /* Includes ------------------------------------------------------------------*/
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -53,6 +53,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim14;
+
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 
@@ -65,6 +67,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_TIM14_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -113,10 +116,16 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
+  MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim14);
 
-  uint32_t timer_longPress = 0;
-  uint32_t timer_dubblePress = 0;
+  uint32_t timer_blink = TIMER_SET();
+
+  uint32_t timer_longPress = 0; //-> TODO timer / Input
+  uint32_t timer_dubblePress = 0; //-> TODO timer / Input
+
+  outputs[0].param.value = 1;
 
   HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
 
@@ -127,7 +136,11 @@ int main(void)
   while (1)
   {
     //Call every 10ms
-    //GLOBAL_TIMER_TICK(); -> interrupt
+    //GLOBAL_TIMER_TICK(); -> interrupt (done in stm32g0xxit.c)
+	if (TIMER_ELAPSED_S(timer_blink, 60)) {
+		timer_blink = TIMER_SET();
+	}
+
 
     //read inputs
     update_inputs();
@@ -135,41 +148,47 @@ int main(void)
     //BUTTONS
     for (int i = 0; i < INPUTS_SIZE; i++) {
       //INPUT_UNUSED
-      if (inputs->param.button_type == type_notused) {
+      if (inputs[i].param.button_type == type_notused) {
         break;
       }
       //BUTTONS
-      else if (inputs->param.button_type == type_pushbutton) {
-        if (inputs->param.changed) {
-          if (!inputs->param.value && !TIMER_ELAPSED_MS(timer_dubblePress, 750)) {
+      else if (inputs[i].param.button_type == type_pushbutton) {
+        if (inputs[i].param.changed) {
+          if (!inputs[i].param.value && !TIMER_ELAPSED_MS(timer_dubblePress, 750)) {
             //DUBBLE PRESS
             timer_longPress = TIMER_SET(); //Reset longpress
 
             //TODO m_h_regs parser
 
-            inputs->param.changed = false;
+            for (int j = 0; j < OUTPUTS_SIZE; j++)
+            	outputs[j].param.value = 0;
+
+            inputs[i].param.changed = false;
           }
-          else if (!inputs->param.value) {
+          else if (!inputs[i].param.value) {
             //SINGLE PRESS
             timer_dubblePress = TIMER_SET(); //Start timer for 2th press
             timer_longPress = TIMER_SET();   //Reset longpress
 
+        	outputs[i].param.value = outputs[i].param.value ? 0 : 1;
             //TODO m_h_regs parser
 
-            inputs->param.changed = false;
+        	inputs[i].param.changed = false;
           }
-          else if (inputs->param.value) {
+          else if (inputs[i].param.value) {
             if (TIMER_ELAPSED_S(timer_longPress, 2)) {
               //LONG PRESS
 
               //TODO m_h_regs parser
+                for (int j = 0; j < OUTPUTS_SIZE; j++)
+                	outputs[j].param.value = 1;
 
-              inputs->param.changed = false; //Keep on changes if timer not elapsed
+                inputs[i].param.changed = false; //Keep on changes if timer not elapsed
             }
           }
           else {
             //Not possible, But to be sure
-            inputs->param.changed = false;
+        	inputs[i].param.changed = false;
           }
         }
         else {
@@ -177,9 +196,9 @@ int main(void)
         }
       }
       //SWITCH
-      else if (inputs->param.button_type == type_switch) {
-        if (inputs->param.changed) {
-          if (inputs->param.value) {
+      else if (inputs[i].param.button_type == type_switch) {
+        if (inputs[i].param.changed) {
+          if (inputs[i].param.value) {
 
             //TODO m_h_regs parser
 
@@ -217,6 +236,7 @@ int main(void)
 
 
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -228,8 +248,8 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-  RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
   */
@@ -250,8 +270,8 @@ void SystemClock_Config(void)
 
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-    | RCC_CLOCKTYPE_PCLK1;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -260,6 +280,37 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief TIM14 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM14_Init(void)
+{
+
+  /* USER CODE BEGIN TIM14_Init 0 */
+
+  /* USER CODE END TIM14_Init 0 */
+
+  /* USER CODE BEGIN TIM14_Init 1 */
+
+  /* USER CODE END TIM14_Init 1 */
+  htim14.Instance = TIM14;
+  htim14.Init.Prescaler = 159;
+  htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim14.Init.Period = 1000;
+  htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM14_Init 2 */
+
+  /* USER CODE END TIM14_Init 2 */
+
 }
 
 /**
@@ -323,9 +374,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-  /* DMA1_Ch4_5_DMAMUX1_OVR_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Ch4_5_DMAMUX1_OVR_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Ch4_5_DMAMUX1_OVR_IRQn);
 
 }
 
@@ -336,7 +384,7 @@ static void MX_DMA_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -344,14 +392,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, W_RS485_Pin | L6_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, W_RS485_Pin|L6_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, L1_Pin | L2_Pin | L3_Pin | L4_Pin
-    | L5_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, L1_Pin|L2_Pin|L3_Pin|L4_Pin
+                          |L5_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : W_RS485_Pin L6_Pin */
-  GPIO_InitStruct.Pin = W_RS485_Pin | L6_Pin;
+  GPIO_InitStruct.Pin = W_RS485_Pin|L6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -359,16 +407,16 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : B1_Pin B2_Pin B3_Pin B4_Pin
                            B5_Pin B6_Pin */
-  GPIO_InitStruct.Pin = B1_Pin | B2_Pin | B3_Pin | B4_Pin
-    | B5_Pin | B6_Pin;
+  GPIO_InitStruct.Pin = B1_Pin|B2_Pin|B3_Pin|B4_Pin
+                          |B5_Pin|B6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : L1_Pin L2_Pin L3_Pin L4_Pin
                            L5_Pin */
-  GPIO_InitStruct.Pin = L1_Pin | L2_Pin | L3_Pin | L4_Pin
-    | L5_Pin;
+  GPIO_InitStruct.Pin = L1_Pin|L2_Pin|L3_Pin|L4_Pin
+                          |L5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -403,11 +451,11 @@ void Error_Handler(void)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t* file, uint32_t line)
+void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-     /* USER CODE END 6 */
+  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
