@@ -20,8 +20,8 @@
 #define MODBUS_ASCII_END_BYTE 0x0D  // ASCII CR
 #define MODBUS_ASCII_LRC_BYTE 0x2A  // ASCII '*'
 
-uint8_t encode_modbus_ascii(char* encoded, ModbusMessage* message);
+uint8_t encode_modbus_ascii(char* encoded, size_t* length, ModbusMessage* message);
 uint8_t decode_modbus_ascii(char* message, ModbusMessage* decoded);
-uint8_t print_modbus_ascii(ModbusMessage* message);
+//uint8_t print_modbus_ascii(ModbusMessage* message);
 
 #endif /* MODBUS_ASCII_H */

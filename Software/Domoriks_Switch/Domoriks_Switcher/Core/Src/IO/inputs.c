@@ -20,6 +20,8 @@ uint8_t read_di(InputParam *param) {
 	return 0;
 }
 
+
+
 uint8_t read_inv_di(InputParam *param) {
 	uint8_t temp = param->value;
 	param->value = (uint8_t) (HAL_GPIO_ReadPin((GPIO_TypeDef *)param->port, param->pin) ? 0 : 1);

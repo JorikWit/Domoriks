@@ -46,10 +46,12 @@ uint8_t decode_modbus_rtu(uint8_t* message, size_t length, ModbusMessage* decode
 }
 
 uint8_t encode_modbus_rtu(uint8_t* encoded, size_t* length, ModbusMessage* message) {
-    encoded[0] = message->slave_address;
 
+	encoded[0] = message->slave_address;
     encoded[1] = message->function_code;
+
     *length = 4; //address + fnction_code + crc
+
     for (uint8_t i = 2; i < (message->data_length + 2); i++) {
         encoded[i] = message->data[i - 2];
         *length = *length + 1;
@@ -65,15 +67,14 @@ uint8_t encode_modbus_rtu(uint8_t* encoded, size_t* length, ModbusMessage* messa
 }
 
 //MOVE to seperate lib/file. no outputs here
-
-uint8_t print_modbus_rtu(ModbusMessage* message) {
-    uint8_t encoded[100];
-    size_t length;
-
-    encode_modbus_rtu(encoded, &length, message);
-    for (int i = 0; i < length; i++)
-        printf("0x%02X, ", encoded[i]);
-    printf("\n");
-
-    return 0;
-}
+//uint8_t print_modbus_rtu(ModbusMessage* message) {
+//    uint8_t encoded[100];
+//    size_t length;
+//
+//    encode_modbus_rtu(encoded, &length, message);
+//    for (int i = 0; i < length; i++)
+//        printf("0x%02X, ", encoded[i]);
+//    printf("\n");
+//
+//    return 0;
+//}

@@ -51,7 +51,7 @@ uint8_t decode_modbus_ascii(char* message, ModbusMessage* decoded) {
     return 0;  // Success
 }
 
-uint8_t encode_modbus_ascii(char* encoded, ModbusMessage* message) {
+uint8_t encode_modbus_ascii(char* encoded, size_t* lenght, ModbusMessage* message) {
     int i = 0;
     encoded[i++] = ':';
     sprintf(&encoded[i++], "%02X", message->slave_address);
@@ -66,16 +66,17 @@ uint8_t encode_modbus_ascii(char* encoded, ModbusMessage* message) {
     i++;
     encoded[i++] = '\r';
     encoded[i++] = '\n';
+    *lenght = 1;
     encoded[i] = 0x00;
 
     return 0;
 }
 
 //MOVE to seperate lib/file. no outputs here
-
-uint8_t print_modbus_ascii(ModbusMessage* message) {
-    char encoded[100];
-    if (encode_modbus_ascii(encoded, message) == 0)
-    	printf("%s", encoded);
-    return 0;
-}
+//uint8_t print_modbus_ascii(ModbusMessage* message) {
+//    char encoded[100];
+//    size_t length = 0;
+//    if (encode_modbus_ascii(encoded, &length, message) == 0)
+//    	printf("%s", encoded);
+//    return 0;
+//}
