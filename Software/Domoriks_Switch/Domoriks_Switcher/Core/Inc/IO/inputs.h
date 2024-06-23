@@ -8,7 +8,8 @@
 #ifndef INPUTS_H
 #define	INPUTS_H
 
-#include "main.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {             //Combine with Outputparam in IO param
 	uint16_t pin;
@@ -34,7 +35,6 @@ typedef struct {
 #define type_notused 0
 #define type_switch 1
 #define type_pushbutton 2
-
 
 extern Input inputs[INPUTS_SIZE];
 

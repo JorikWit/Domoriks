@@ -16,6 +16,7 @@
 
 #include "modbusm.h"
 #include "device_config.h"
+#include "IO/outputs.h"
 
 extern uint8_t* modbusCoils;
 extern uint8_t* modbusInputs;
@@ -29,6 +30,9 @@ extern uint16_t* modbusIReg;
 #define INVALID_COIL_VALUE          0x03
 #define INVALID_FUNCTION            0x10
 #define NOT_IMPLEMENTED             0xFF
+
+//ERRORS SYNC
+#define SYNC_OK                     0x00
 
 //MESSAGE FUNCTIONS
 #define READ_COILS              0x01 
@@ -49,5 +53,9 @@ extern uint16_t* modbusIReg;
 #define READ_DEVICE_ID_         0x2B
 
 uint8_t modbusm_handle(ModbusMessage* message);
+uint8_t modbus_set_outputs(void);
+uint8_t modbus_get_outputs(void);
+
+
 
 #endif /* MODBUS_FUNCTION_H */

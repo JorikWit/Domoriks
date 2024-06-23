@@ -31,8 +31,6 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-extern UART_HandleTypeDef huart1;
-extern DMA_HandleTypeDef hdma_usart1_rx;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -84,9 +82,17 @@ void Error_Handler(void);
 #define L4_GPIO_Port GPIOA
 #define L5_Pin GPIO_PIN_12
 #define L5_GPIO_Port GPIOA
+
 /* USER CODE BEGIN Private defines */
+#define USE_FULL_LL_DRIVER
 
 extern UART_HandleTypeDef huart1;
+
+#define RECEIVE_BUFFER_SIZE 50
+extern uint8_t received_buffer[RECEIVE_BUFFER_SIZE];
+extern uint8_t uart_index;
+extern uint32_t timer_lastbyte;
+extern uint8_t new_uartstream;
 
 /* USER CODE END Private defines */
 

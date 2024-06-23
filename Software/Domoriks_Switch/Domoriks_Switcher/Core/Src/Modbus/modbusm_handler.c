@@ -1,5 +1,5 @@
 /*
- * File:   modbus_function_handler.c
+ * File:   modbusm_handler.c
  * Author: Jorik Wittevrongel
  *
  * Created on October 5 2023
@@ -28,10 +28,15 @@ make functionhandler template with switch case struct for all modbus functions
 
  */
 
-uint8_t* modbusCoils;
-uint8_t* modbusInputs;
-uint16_t* modbusHReg;
-uint16_t* modbusIReg;
+uint8_t mbCoilsArray[1] = {0x01};
+uint8_t mbInputsArray[1];
+uint16_t mbHRegArray[1];
+uint16_t mbIRegArray[1];
+
+uint8_t* modbusCoils = mbCoilsArray;
+uint8_t* modbusInputs = mbInputsArray;
+uint16_t* modbusHReg = mbHRegArray;
+uint16_t* modbusIReg = mbIRegArray;
 
 uint8_t modbusm_handle(ModbusMessage* message) {
     //check if device ID matches
@@ -159,7 +164,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         //ADD MAX VALUE ERROR
 
         //write coil;
-        printf("%02X, %02X\n", coil_adress, value);
+        //printf("%02X, %02X\n", coil_adress, value);
         if (value == 0xFF00) {
             modbusCoils[coil_adress / 8] |= (1 << (coil_adress % 8));
         }
@@ -203,4 +208,18 @@ uint8_t modbusm_handle(ModbusMessage* message) {
     }
 
     return HANDLED_OK;
+}
+
+uint8_t modbus_set_outputs() {
+	for (int i=0; i < OUTPUTS_SIZE; i++){
+		outputs[i].param.value = (*modbusCoils >> i) & 1; //get the i-th bit
+	}
+	return SYNC_OK;
+}
+
+uint8_t modbus_get_outputs() {
+	for (int i=0; i < OUTPUTS_SIZE; i++){
+		*modbusCoils = (*modbusCoils & ~(1 << i)) | (outputs[i].param.value << i);
+	}
+	return SYNC_OK;
 }

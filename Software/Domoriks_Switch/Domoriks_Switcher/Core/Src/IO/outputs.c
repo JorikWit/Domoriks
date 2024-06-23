@@ -5,6 +5,7 @@
  * Created on December 20 2022, 19:02
  */
 
+#include "main.h"
 #include "IO/outputs.h"
 
 uint8_t init_do(OutputParam *param) {
@@ -37,7 +38,7 @@ uint8_t update_outputs() {
     uint8_t nok = 0;
     Output *ptr = outputs;
     for (int i = 0; i < OUTPUTS_SIZE; i++) {
-        if (!ptr->updateFunction(&ptr->param))
+	        if (!ptr->updateFunction(&ptr->param))
             nok = 1;
         ptr++;
     }

@@ -6,12 +6,13 @@
  */
 
 #include "Modbus/modbus_rtu.h"
+#include "main.h"
 
 uint16_t calculate_crc(const uint8_t* data, size_t length) {  //it is possible to make this faster with lookup tables
-    uint16_t crc = 0xFFFF;
+	uint16_t crc = 0xFFFF;
     for (uint8_t i = 0; i < length; i++) {
         crc ^= (uint16_t)data[i];
-        for (uint8_t j = 8; j != 0; j--) {
+        for (uint8_t j = 8; j > 0; j--) {
             if ((crc & 0x0001) != 0) {
                 crc >>= 1;
                 crc ^= 0xA001;
@@ -20,17 +21,18 @@ uint16_t calculate_crc(const uint8_t* data, size_t length) {  //it is possible t
                 crc >>= 1;
         }
     }
-
     return (uint16_t)(crc << 8) | (uint16_t)(crc >> 8);
 }
 
 uint8_t decode_modbus_rtu(uint8_t* message, size_t length, ModbusMessage* decoded) {
-    //check CRC
+	//check length slave_addr, fucn_code, 1 data, 2 crc min.
+	if (length <= 5)
+		return 1; //Error
+	//check CRC
     uint16_t crc_calc = calculate_crc(message, length - 2); //length with crc
     uint16_t crc_recv = (uint16_t)(message[length - 2] << 8) | (uint16_t)(message[length - 1]);
-    if (crc_recv != crc_calc) {
+    if (crc_recv != crc_calc)
         return 1; //Error
-    }
 
     //Parse message
     decoded->slave_address = message[0];

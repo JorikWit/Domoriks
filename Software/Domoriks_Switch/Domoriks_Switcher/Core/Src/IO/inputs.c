@@ -5,6 +5,7 @@
  * Created on December 20 2022, 17:40
  */
 
+#include "main.h"
 #include "IO/inputs.h"
 
 uint8_t init_di(InputParam *param) {
@@ -19,8 +20,6 @@ uint8_t read_di(InputParam *param) {
 		param->changed = 1;
 	return 0;
 }
-
-
 
 uint8_t read_inv_di(InputParam *param) {
 	uint8_t temp = param->value;

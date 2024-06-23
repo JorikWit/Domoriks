@@ -8,8 +8,9 @@
 #ifndef INPUT_HANDLER_H
 #define	INPUT_HANDLER_H
 
-#include "main.h"
+#include <stdbool.h>
+#include <stdint.h>
 
-uint8_t handle_inputs_change( void );
+void input_handler();
 
 #endif	/* INPUT_HANDLER_H */

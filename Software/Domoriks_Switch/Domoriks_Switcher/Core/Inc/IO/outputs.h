@@ -8,7 +8,8 @@
 #ifndef OUTPUTS_H
 #define	OUTPUTS_H
 
-#include "main.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {             //Combine with Inputparam in IO param
 	uint16_t pin;
