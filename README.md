@@ -1,5 +1,5 @@
 # Domoriks
-Open-source home automation project
+Home automation project
 
 ## PCB design in Circuit Studio
 
