@@ -27,6 +27,7 @@
 #include "timer.h"
 
 #include "Actions/actions.h"
+#include "Flash/flash.h"
 
 #include "IO/inputs.h"
 #include "IO/input_handler.h"
@@ -63,8 +64,6 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
-uint8_t uart_received_byte;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,8 +87,6 @@ uint8_t new_uartstream = false;
 //parse message
 uint8_t received_buffer[RECEIVE_BUFFER_SIZE];
 uint8_t uart_index = 0;
-
-uint8_t booloader = 1;
 
 /* USER CODE END 0 */
 
@@ -132,14 +129,19 @@ int main(void)
 
   uint32_t timer_blink = TIMER_SET();
   HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
-  HAL_GPIO_WritePin(L6_GPIO_Port, L6_Pin, 1);
+  //HAL_GPIO_WritePin(L6_GPIO_Port, L6_Pin, 1);
   //HAL_Delay(1000);
 
+  HAL_IWDG_Refresh(&hiwdg); //256ms 32 * (32000khz/256=8ms)
+//  Flash_WriteInputs(inputs, FLASH_INPUTS_SIZE);
+//  Flash_WriteInputActions(inputActions, FLASH_INPUTACTIONS_SIZE);
+//  Flash_WriteExtraActions(extraActions, FLASH_EXTRAACTIONS_SIZE);
+//  Flash_WriteOutputs(outputs, FLASH_OUTPUTS_SIZE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_Delay(250);
+  //HAL_Delay(250);
 
   while (1)
   {
@@ -158,9 +160,10 @@ int main(void)
     //uart IT superviser
     //on some occasions the interrupt isnt reset
     //detect this and reset the Interrupt
-    if (TIMER_ELAPSED_MS(timer_lastbyte, 1500))  //there must be a heartbeat on the rs485 line
+    if (TIMER_ELAPSED_MS(timer_lastbyte, 100)) { //there must be a heartbeat on the rs485 line
     	HAL_UART_Receive_IT(&huart1, &uart_received_byte, 1); //Set new interrupt
-
+    	timer_lastbyte = TIMER_SET();
+    }
 
     //read inputs
     update_inputs();
@@ -168,12 +171,17 @@ int main(void)
     //input handler
     input_handler();
 
+    //prep registers
     modbus_get_outputs();
 
-    //modbus
+    //modbus RS485
     modbus();
 
+    //Parse single output
     modbus_set_outputs();
+
+    modbus_parse_register(); // always after set. this write outputs directly
+    modbus_parse_action_update();
 
     //write outputs
     update_outputs();
@@ -395,8 +403,8 @@ static void MX_GPIO_Init(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
-  timer_lastbyte = TIMER_SET();						      //reset timer (time passed since last recieved byte)
-  new_uartstream = true;									      //indicate new message
+  timer_lastbyte = TIMER_SET();						     //reset timer (time passed since last recieved byte)
+  new_uartstream = true;								 //indicate new message
   received_buffer[uart_index++] = uart_received_byte;    //copy received byte and shift index
 
   if (uart_index >= RECEIVE_BUFFER_SIZE) {

@@ -6,7 +6,10 @@
  */
 
 #include "Modbus/modbusm_handler.h"
-
+#include "Actions/actions.h"
+#include "Flash/flash.h"
+#include "IO/outputs.h"
+#include "timer.h"
  /*
 
 make functionhandler template with switch case struct for all modbus functions
@@ -28,15 +31,19 @@ make functionhandler template with switch case struct for all modbus functions
 
  */
 
-uint8_t mbCoilsArray[1] = {0x01};
+uint8_t mbCoilsArray[1] = {0x00};
 uint8_t mbInputsArray[1];
-uint16_t mbHRegArray[1];
+uint16_t mbHRegArray[50];
 uint16_t mbIRegArray[1];
 
 uint8_t* modbusCoils = mbCoilsArray;
 uint8_t* modbusInputs = mbInputsArray;
 uint16_t* modbusHReg = mbHRegArray;
 uint16_t* modbusIReg = mbIRegArray;
+
+
+uint8_t new_delay_action = 0;
+uint8_t new_action_update = 0;
 
 uint8_t modbusm_handle(ModbusMessage* message) {
     //check if device ID matches
@@ -47,7 +54,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
 
     //handle message
     switch (message->function_code) {
-    case READ_COILS: ;
+    case READ_COILS:
         //parse
         uint16_t first_coil = 0;
         uint16_t amount_coils = 0;
@@ -59,14 +66,6 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             message = NULL;
             return INVALID_DATA_LENGHT;
         }
-        //ADD MAX VALUE ERROR
-        /*
-        pressent in device_config
-        #define MAX_COILS 256
-        #define MAX_INPUTS 256
-        #define MAX_HOLD_REGS 64
-        #define MAX_INPUTS_REGS 64
-        */
 
         //reply
         message->slave_address = DEVICE_ID;
@@ -79,7 +78,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + i) = (nextB << (8 - (first_coil % 8)) | currentB >> (first_coil % 8));
         }
         break;
-    case READ_DISC_INPUTS: ;
+    case READ_DISC_INPUTS:
         //parse
         uint16_t first_input = 0;
         uint16_t amount_inputs = 0;
@@ -91,7 +90,6 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             message = NULL;
             return INVALID_DATA_LENGHT;
         }
-        //ADD MAX VALUE ERROR
 
         //reply
         message->slave_address = DEVICE_ID;
@@ -104,7 +102,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + i) = ( ((nextB << 8) - (first_input % 8)) | (currentB >> (first_input % 8)) );
         }
         break;
-    case READ_HOLD_REGS: ;
+    case READ_HOLD_REGS:
         //parse
         uint16_t first_hreg = 0;
         uint16_t amount_hregs = 0;
@@ -116,7 +114,6 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             message = NULL;
             return INVALID_DATA_LENGHT;
         }
-        //ADD MAX VALUE ERROR
 
         //reply
         message->slave_address = DEVICE_ID;
@@ -128,7 +125,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + (i * 2) - 1) = *(modbusHReg + i - 1 + first_hreg);
         }
         break;
-    case READ_INPUT_REGS: ;
+    case READ_INPUT_REGS:
         //parse
         uint16_t first_ireg = 0;
         uint16_t amount_iregs = 0;
@@ -150,7 +147,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + (i * 2) - 1) = *(modbusIReg + i - 1 + first_ireg);
         }
         break;
-    case WRITE_SINGLE_COIL: ;
+    case WRITE_SINGLE_COIL:
         //parse
         uint16_t coil_adress = 0;
         uint16_t value = 0;
@@ -169,7 +166,10 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             modbusCoils[coil_adress / 8] |= (1 << (coil_adress % 8));
         }
         else if (value == 0x0000) {
-            modbusCoils[coil_adress / 8] = modbusCoils[coil_adress / 8] & ~(1 << (coil_adress % 8));
+            modbusCoils[coil_adress / 8] &= ~(1 << (coil_adress % 8));
+        }
+        else if (value == 0x5555) {  // Unofficial toggle operation domoriks only
+            modbusCoils[coil_adress / 8] ^= (1 << (coil_adress % 8));
         }
         else {
             message = NULL;
@@ -177,7 +177,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
         message = message; //echo message
         break;
-    case WRITE_SINGLE_REG: ;      //   <- Tis only apply for holding regs
+    case WRITE_SINGLE_REG:      //   <- Tis only apply for holding regs
         //parse
         uint16_t reg_adress = 0;
         if (message->data_length == 4) {
@@ -191,11 +191,33 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         //reply
         message = message; //echo message
         break;
+
+    case WRITE_MULTI_REGS: //   <- Tis only apply for holding regs
+    	//TODO test WRITE_MULTI_REGS
+        // Parse the request message
+        uint16_t start_address = (message->data[0] << 8) | message->data[1];
+        uint16_t num_registers = (message->data[2] << 8) | message->data[3];
+        uint8_t byte_count = message->data[4];
+        if (message->data_length != 5 + byte_count || byte_count != num_registers * 2) {
+            return INVALID_DATA_LENGHT;
+        }
+        // Write the values to the holding registers
+        for (uint8_t i = 0; i < num_registers; i++) {
+            uint16_t value = (message->data[5 + i * 2] << 8) | message->data[6 + i * 2];
+            mbHRegArray[start_address + i] = value;
+        }
+        new_delay_action = 1;
+        // Prepare the response message
+        message->data_length = 4;
+        message->data[0] = (start_address >> 8) & 0xFF;
+        message->data[1] = start_address & 0xFF;
+        message->data[2] = (num_registers >> 8) & 0xFF;
+        message->data[3] = num_registers & 0xFF;
+        break;
     case READ_EXCEPTION_STATUS:
     case DIAGNOSE_SERIAL:
     case COMM_EVENT_COUNT:
     case WRITE_MULTI_COILS:
-    case WRITE_MULTI_REGS:
     case REPORT_SERVER_ID:
     case READ_DEVICE_ID:
     case MASK_WRITE_REG:
@@ -210,6 +232,13 @@ uint8_t modbusm_handle(ModbusMessage* message) {
     return HANDLED_OK;
 }
 
+uint8_t modbus_get_outputs() {
+	for (int i=0; i < OUTPUTS_SIZE; i++){
+		*modbusCoils = (*modbusCoils & ~(1 << i)) | (outputs[i].param.value << i);
+	}
+	return SYNC_OK;
+}
+
 uint8_t modbus_set_outputs() {
 	for (int i=0; i < OUTPUTS_SIZE; i++){
 		outputs[i].param.value = (*modbusCoils >> i) & 1; //get the i-th bit
@@ -217,9 +246,92 @@ uint8_t modbus_set_outputs() {
 	return SYNC_OK;
 }
 
-uint8_t modbus_get_outputs() {
-	for (int i=0; i < OUTPUTS_SIZE; i++){
-		*modbusCoils = (*modbusCoils & ~(1 << i)) | (outputs[i].param.value << i);
+uint8_t modbus_parse_register(){
+	if (new_delay_action) {
+		uint16_t coil_i = mbHRegArray[0];
+		uint16_t coil_data = mbHRegArray[1];
+		uint16_t delay = mbHRegArray[2];
+		//uint8_t pwm = (mbHRegArray[3] >> 8) & 0xFF;
+
+		if (coil_data == 0x5555) {
+			outputs[coil_i].param.delay_value = !outputs[coil_i].param.value;
+		} else if (coil_data == 0xFF00) {
+			outputs[coil_i].param.delay_value = 1;
+		} else if (coil_data == 0x0000) {
+			outputs[coil_i].param.delay_value = 0;
+		} else if (coil_data == 0x0F00) {
+			outputs[coil_i].param.value = 1;
+			outputs[coil_i].param.delay_value = 0;
+		} else if (coil_data == 0x00F0) {
+			outputs[coil_i].param.delay_value = 1;
+			outputs[coil_i].param.value = 0;
+		} else {
+			outputs[coil_i].param.value = outputs[coil_i].param.value; //nop
+		}
+		outputs[coil_i].param.delay = delay;
+		if (delay != 0)
+			outputs[coil_i].param.startTimer = TIMER_SET();
+
+		new_delay_action = 0;
 	}
 	return SYNC_OK;
+}
+
+uint8_t modbus_parse_action_update(){
+	if (new_action_update) {
+		uint8_t inputNumber = (mbHRegArray[0] >> 8 & 0xFF);
+		uint8_t actionType = (mbHRegArray[0] & 0xFF);      //single, double, long, switchon, switchoff, extra
+
+		EventAction newEventAction;
+
+		newEventAction.action = (mbHRegArray[1] >> 8 & 0xFF);
+		newEventAction.delayAction = (mbHRegArray[1] & 0xFF);
+		newEventAction.delay = (uint32_t)(((mbHRegArray[2] >> 8 & 0xFF) << 16) | (mbHRegArray[2] & 0xFF));
+		newEventAction.pwm = (mbHRegArray[3] >> 8 & 0xFF);
+		newEventAction.id = (mbHRegArray[3] & 0xFF);
+		newEventAction.output = (mbHRegArray[4] >> 8 & 0xFF);
+		newEventAction.send = (mbHRegArray[4] & 0xFF);
+		newEventAction.extraEventId = (mbHRegArray[5] >> 8 & 0xFF);
+		uint8_t save = (mbHRegArray[5] & 0xFF);
+
+
+		EventAction* oldEventAction;
+
+		if (inputNumber < (EXTRA_ACTION_PER_INPUT * INPUTS_SIZE) &&
+			actionType == 6)  {
+			oldEventAction = &extraActions[inputNumber];
+		}
+		else if (inputNumber < INPUTS_SIZE) {
+			switch (actionType) {
+			case 1:
+				oldEventAction = &inputActions[inputNumber].singlePress;
+				break;
+			case 2:
+				oldEventAction = &inputActions[inputNumber].doublePress;
+				break;
+			case 3:
+				oldEventAction = &inputActions[inputNumber].longPress;
+				break;
+			case 4:
+				oldEventAction = &inputActions[inputNumber].switchOn;
+				break;
+			case 5:
+				oldEventAction = &inputActions[inputNumber].switchOff;
+				break;
+			default:
+				return WRONG_ACTION_TYPE;
+			}
+		}
+		else {
+			return WRONG_ACTION_INPUTNMBR;
+		}
+
+		copyEventAction(&newEventAction, oldEventAction);
+
+		if (save) {
+			Flash_WriteInputActions(inputActions, FLASH_INPUTACTIONS_SIZE);
+			Flash_WriteExtraActions(extraActions, FLASH_EXTRAACTIONS_SIZE);
+		}
+	}
+	return ACTION_OK;
 }

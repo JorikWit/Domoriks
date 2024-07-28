@@ -84,11 +84,11 @@ void Error_Handler(void);
 #define L5_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-#define USE_FULL_LL_DRIVER
+//#define USE_FULL_LL_DRIVER
 
 extern UART_HandleTypeDef huart1;
 
-#define RECEIVE_BUFFER_SIZE 50
+#define RECEIVE_BUFFER_SIZE 100
 extern uint8_t received_buffer[RECEIVE_BUFFER_SIZE];
 extern uint8_t uart_index;
 extern uint32_t timer_lastbyte;

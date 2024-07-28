@@ -17,6 +17,9 @@ typedef struct {             //Combine with Inputparam in IO param
   	uint8_t value;
   	uint8_t min;
   	uint8_t max;
+  	uint16_t delay;
+  	uint8_t delay_value;
+  	uint32_t startTimer;
 } OutputParam;
 
 typedef uint8_t (*pfnOutputInit)(OutputParam*);

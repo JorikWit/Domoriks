@@ -35,9 +35,9 @@ Input inputs[INPUTS_SIZE] = {
 		{{B2_Pin,(const int)B2_GPIO_Port,type_pushbutton,0,0,1,0}, &init_di, &read_inv_di},
 		{{B3_Pin,(const int)B3_GPIO_Port,type_pushbutton,0,0,1,0}, &init_di, &read_inv_di},
 //		{{pin,    port,                  type   value,min,max,updated} init_func, update_func}
-		{{B4_Pin,(const int)B4_GPIO_Port,type_switch,0,0,1,0}, &init_di, &read_inv_di},
-		{{B5_Pin,(const int)B5_GPIO_Port,type_switch,0,0,1,0}, &init_di, &read_inv_di},
-		{{B6_Pin,(const int)B6_GPIO_Port,type_switch,0,0,1,0}, &init_di, &read_inv_di}
+		{{B4_Pin,(const int)B4_GPIO_Port,type_pushbutton,0,0,1,0}, &init_di, &read_inv_di},
+		{{B5_Pin,(const int)B5_GPIO_Port,type_pushbutton,0,0,1,0}, &init_di, &read_inv_di},
+		{{B6_Pin,(const int)B6_GPIO_Port,type_pushbutton,0,0,1,0}, &init_di, &read_inv_di}
 //		{{pin,    port,                  type   value,min,max,updated} init_func, update_func}
 };
 

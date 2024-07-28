@@ -45,7 +45,8 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 MEMORY
 {
   RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 8K
-  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 32K
+  FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 28K
+  USERDATA (rx)   : ORIGIN = 0x08007000, LENGTH = 4K
 }
 
 /* Sections */
@@ -85,13 +86,13 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .ARM.extab   : {
+  .ARM.extab (READONLY): {
     . = ALIGN(4);
     *(.ARM.extab* .gnu.linkonce.armextab.*)
     . = ALIGN(4);
   } >FLASH
 
-  .ARM : {
+  .ARM (READONLY): {
     . = ALIGN(4);
     __exidx_start = .;
     *(.ARM.exidx*)
@@ -99,7 +100,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .preinit_array     :
+  .preinit_array (READONLY):
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__preinit_array_start = .);
@@ -108,7 +109,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .init_array :
+  .init_array (READONLY):
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__init_array_start = .);
@@ -118,7 +119,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .fini_array :
+  .fini_array (READONLY):
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__fini_array_start = .);
@@ -127,6 +128,14 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
     . = ALIGN(4);
   } >FLASH
+  
+    /* Define a new section for user data */
+  .userdata (NOLOAD):
+  {
+    . = ALIGN(4);
+    KEEP(*(.userdata)) /* Ensure user data is not removed */
+    . = ALIGN(4);
+  } >USERDATA
 
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
