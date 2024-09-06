@@ -41,7 +41,6 @@ uint32_t resend_timer;
 uint8_t resend_count = 0;
 
 void recieve() {
-	//__disable_irq(); //disable interrupt so incomming data isnt distorded
 	memset(reply_buffer, 0, sizeof(reply_buffer));
 	if (decode_modbus_rtu(received_buffer, uart_index, &recieved_message) == 0) {
 		//handle message
@@ -61,7 +60,6 @@ void recieve() {
 	new_uartstream = false;
 	uart_index = 0;
 	memset(received_buffer, 0, sizeof(received_buffer));
-	//__enable_irq();
 }
 
 #define SEND_BUFFER_SIZE 100
@@ -202,10 +200,7 @@ void send(){
 }
 
 
-void response(){
-
-	//TODO wait for correct response timeout & resend
-	//__disable_irq(); //disable interrupt so incomming data isnt distorded
+void response() {
 	memset(reply_buffer, 0, sizeof(reply_buffer));
 
 	if (new_uartstream) {
@@ -238,7 +233,6 @@ void response(){
 		wait_for_response = false;
 		resend_count = 0;
 	}
-	//__enable_irq();
 }
 
 void modbus() {

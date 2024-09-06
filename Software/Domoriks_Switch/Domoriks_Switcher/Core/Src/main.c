@@ -134,9 +134,14 @@ int main(void)
 
   HAL_IWDG_Refresh(&hiwdg); //256ms 32 * (32000khz/256=8ms)
 //  Flash_WriteInputs(inputs, FLASH_INPUTS_SIZE);
-//  Flash_WriteInputActions(inputActions, FLASH_INPUTACTIONS_SIZE);
-//  Flash_WriteExtraActions(extraActions, FLASH_EXTRAACTIONS_SIZE);
+  Flash_WriteInputActions(inputActions, FLASH_INPUTACTIONS_SIZE);
+  Flash_WriteExtraActions(extraActions, FLASH_EXTRAACTIONS_SIZE);
 //  Flash_WriteOutputs(outputs, FLASH_OUTPUTS_SIZE);
+
+  //  Flash_WriteInputs(inputs, FLASH_INPUTS_SIZE);
+//  Flash_ReadInputActions(inputActions, FLASH_INPUTACTIONS_SIZE);
+//  Flash_ReadExtraActions(extraActions, FLASH_EXTRAACTIONS_SIZE);
+  //  Flash_WriteOutputs(outputs, FLASH_OUTPUTS_SIZE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -185,7 +190,6 @@ int main(void)
 
     //write outputs
     update_outputs();
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
