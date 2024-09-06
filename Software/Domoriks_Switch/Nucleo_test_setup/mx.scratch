@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ScratchFile FileVersion="3.0">
+  <FileVersion>3.0</FileVersion>
+  <Workspace>
+    <WorkspaceType>Single-project</WorkspaceType>
+    <WorkspacePath>C:\Users\Jorik Wittevrongel\LocalProjects\960-Domoriks\Domoriks\Software\Domoriks_Switch\Nucleo_test_setup\</WorkspacePath>
+    <underRoot>true</underRoot>
+    <TrustZone>0</TrustZone>
+    <HAL_Driver>C:\Users\Jorik Wittevrongel\STM32Cube\Repository\STM32Cube_FW_G0_V1.6.2</HAL_Driver>
+    <CMSIS>Drivers/CMSIS</CMSIS>
+    <Toolchain>STM32CubeIDE</Toolchain>
+    <IocFile>Nucleo_test_setup.ioc</IocFile>
+    <Project>
+              
+      <ProjectName>Nucleo_test_setup</ProjectName>
+           
+      <ProjectNature>C</ProjectNature>
+       
+      <Secure/>
+            
+      <filestoremove>                           </filestoremove>
+      <sourceEntriesToRemove>
+            
+        <sourceEntry/>
+      </sourceEntriesToRemove>
+          
+      <configs>
+        <config>
+              
+          <name>Nucleo_test_setup</name>
+          	 
+          <mainSourceRepo>Core</mainSourceRepo>
+             
+          <sourceStructure>Advanced</sourceStructure>
+           
+          <device>STM32G071RBTx</device>
+          		     
+          <cpucore>ARM Cortex-M0+</cpucore>
+                  
+          <fpu>None</fpu>
+                
+          <memories>
+                       
+            <memory access="xrw" name="RAM" size="36864" start="0x20000000"/>
+                    
+            <memory access="rx" name="FLASH" size="131072" start="0x8000000"/>
+                
+          </memories>
+              
+          <startup>C:\Users\Jorik Wittevrongel\STM32Cube\Repository\STM32Cube_FW_G0_V1.6.2\Drivers\CMSIS\Device\ST\STM32G0xx\Source\Templates\gcc\startup_stm32g071xx.s</startup>
+                
+          <LinkSettings>
+            	
+            <LinkAdditionalLibs>	</LinkAdditionalLibs>
+          </LinkSettings>
+              
+          <heapSize>0x200</heapSize>
+              
+          <stackSize>0x400</stackSize>
+                  
+          <cpuclock>64</cpuclock>
+                  
+          <board>NUCLEO-G071RB</board>
+              
+          <debugprobe>swd</debugprobe>
+              
+          <optimization/>
+              
+          <Aincludes>
+                    
+            <include/>
+                    
+          </Aincludes>
+              
+          <Adefines>        </Adefines>
+                
+          <Cdefines>
+                    
+            <define>USE_HAL_DRIVER</define>
+                    
+            <define>STM32G071xx</define>
+                    
+          </Cdefines>
+              
+          <Ldefines>        </Ldefines>
+                  
+          <Cincludes>
+            		        
+            <include>Core\Inc</include>
+                    
+            <include>Drivers\STM32G0xx_HAL_Driver\Inc</include>
+                    
+            <include>Drivers\STM32G0xx_HAL_Driver\Inc\Legacy</include>
+                    
+            <include>Drivers\CMSIS\Device\ST\STM32G0xx\Include</include>
+                    
+            <include>Drivers\CMSIS\Include</include>
+                    
+          </Cincludes>
+              
+          <definestoremove>
+                    
+            <Adefines>            </Adefines>
+                    
+            <Cdefines>
+                                  
+              <define>USE_FULL_LL_DRIVER</define>
+                                  
+              <define>USE_FULL_ASSERT=1U</define>
+                          
+            </Cdefines>
+                     
+            <Ldefines>            </Ldefines>
+                     
+          </definestoremove>
+              
+          <inctoremove>
+                    
+            <Aincludes>
+                          
+              <include/>
+                          
+            </Aincludes>
+                    
+            <Cincludes>            </Cincludes>
+                    
+          </inctoremove>
+                 
+        </config>
+                
+      </configs>
+       
+      <copyAsReference>false</copyAsReference>
+               
+      <sourceEntries>
+                    
+        <sourceEntry>
+                      
+          <name>Core</name>
+                      
+        </sourceEntry>
+                            
+        <sourceEntry>
+                      
+          <name>Drivers</name>
+                  
+        </sourceEntry>
+                	          
+      </sourceEntries>
+      <Groups>    </Groups>
+       
+    </Project>
+  </Workspace>
+</ScratchFile>
