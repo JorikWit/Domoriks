@@ -59,7 +59,7 @@
 TIM_HandleTypeDef htim14;
 
 UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart1_rx;
 
 /* USER CODE BEGIN PV */
 
@@ -68,7 +68,7 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_USART2_UART_Init(void);
+static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM14_Init(void);
 /* USER CODE BEGIN PFP */
@@ -77,15 +77,17 @@ static void MX_TIM14_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint8_t MODBUS_ID;
+//#define UPLOAD_NEW_MODBUS_ID
+#ifdef UPLOAD_NEW_MODBUS_ID
+  __attribute__((section(".modbus_id"))) const uint8_t new_id = 65;  // Logic ID, e.g., 1
+#endif
 
-//read uart
-uint8_t uart_received_byte;
-uint32_t timer_lastbyte;
-uint8_t new_uartstream = false;
 
-//parse message
-uint8_t received_buffer[RECEIVE_BUFFER_SIZE];
-uint8_t uart_index = 0;
+
+uint8_t uart_rxBuffer[UART_BUFFER_SIZE] = { 0 };
+uint8_t new_rxdata = 0;
+uint16_t rxDataLen = 0;
 
 /* USER CODE END 0 */
 
@@ -117,22 +119,68 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART2_UART_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
-
-  //HAL_IWDG_Refresh(&hiwdg);
   HAL_TIM_Base_Start_IT(&htim14);
-  HAL_UART_Receive_IT(&huart1, &uart_received_byte, 1);
+
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rxBuffer, UART_BUFFER_SIZE);
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+
+  MODBUS_ID = *(uint8_t*)MODBUS_ID_ADDRESS;
+
+  HAL_GPIO_WritePin(L6_GPIO_Port, L6_Pin, 0);
+  HAL_GPIO_WritePin(L5_GPIO_Port, L5_Pin, 0);
+  HAL_GPIO_WritePin(L4_GPIO_Port, L4_Pin, 0);
+  HAL_GPIO_WritePin(L3_GPIO_Port, L3_Pin, 0);
+  HAL_GPIO_WritePin(L2_GPIO_Port, L2_Pin, !0);
+  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, !0);
+//  HAL_IWDG_Refresh(&hiwdg);
+  HAL_Delay(500);
+
+  for (int i = 0; i < MODBUS_ID / 10; i++)
+  {
+//	  HAL_IWDG_Refresh(&hiwdg);
+	  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, !1);
+	  HAL_Delay(250);
+	  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, !0);
+	  HAL_Delay(150);
+  }
+
+//  HAL_IWDG_Refresh(&hiwdg);
+  HAL_Delay(250);
+
+  for (int i = 0; i < MODBUS_ID % 10; i++)
+  {
+//	  HAL_IWDG_Refresh(&hiwdg);
+	  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, !1);
+	  HAL_Delay(250);
+	  HAL_GPIO_WritePin(L1_GPIO_Port, L1_Pin, !0);
+	  HAL_Delay(150);
+  }
 
   uint32_t timer_blink = TIMER_SET();
   HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
 
-  Flash_WriteInputs(inputs, FLASH_INPUTS_SIZE);
-  Flash_WriteInputActions(inputActions, FLASH_INPUTACTIONS_SIZE);
-  Flash_WriteExtraActions(extraActions, FLASH_EXTRAACTIONS_SIZE);
-  Flash_WriteOutputs(outputs, FLASH_OUTPUTS_SIZE);
+//  inputActions[0].singlePress.id = (MODBUS_ID == 64 ? 65 : 64);
+//  inputActions[1].singlePress.id = (MODBUS_ID == 64 ? 65 : 64);
+//  inputActions[2].singlePress.id = (MODBUS_ID == 64 ? 65 : 64);
+//  inputActions[3].singlePress.id = (MODBUS_ID == 64 ? 65 : 64);
+//  inputActions[4].singlePress.id = (MODBUS_ID == 64 ? 65 : 64);
+//  inputActions[5].singlePress.id = (MODBUS_ID == 64 ? 65 : 64);
+//
+//  Flash_Erase(USERDATA_ORIGIN, USERDATA_LENGTH);
+//  Flash_WriteInputActions(inputActions);
+//  Flash_WriteInputs(inputs);
+//  Flash_WriteExtraActions(extraActions);
+//  Flash_WriteOutputs(outputs);
+
+  Flash_ReadInputActions(inputActions);
+  Flash_ReadInputs(inputs);
+  Flash_ReadExtraActions(extraActions);
+  Flash_ReadOutputs(outputs);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -154,10 +202,7 @@ int main(void)
     }
 
     //uart IT superviser
-    //on some occasions the interrupt isnt reset
-    //detect this and reset the Interrupt
-//    if (TIMER_ELAPSED_MS(timer_lastbyte, 1500))  //there must be a heartbeat on the rs485 line
-//    	HAL_UART_Receive_IT(&huart1, &uart_received_byte, 1); //Set new interrupt
+    //needed?
 
 
     //read inputs
@@ -179,16 +224,10 @@ int main(void)
     modbus_set_outputs();
 
     modbus_parse_register(); // always after set. this write outputs directly
-
-    //TODO parse
-    //modbus_parse_newInputEvents();
-    //modbus_parse_newExtraEvents();
-    //modbus_parse_newInputConfig
-    //modbus_parse_newOutputconfig
+    modbus_parse_action_update();
 
     //write outputs
     update_outputs();
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -323,50 +362,18 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
+  * Enable DMA controller clock
   */
-static void MX_USART2_UART_Init(void)
+static void MX_DMA_Init(void)
 {
 
-  /* USER CODE BEGIN USART2_Init 0 */
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
-  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_SetRxFifoThreshold(&huart2, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_DisableFifoMode(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
 }
 
@@ -402,6 +409,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : USART2_RX_Pin */
+  GPIO_InitStruct.Pin = USART2_RX_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF1_USART2;
+  HAL_GPIO_Init(USART2_RX_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : L1_Pin */
   GPIO_InitStruct.Pin = L1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -434,21 +449,80 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
 {
-  timer_lastbyte = TIMER_SET();						     //reset timer (time passed since last recieved byte)
-  new_uartstream = true;								 //indicate new message
-  received_buffer[uart_index++] = uart_received_byte;    //copy received byte and shift index
+	if (huart->Instance == USART1)
+	{
+		__HAL_UART_CLEAR_IDLEFLAG(huart);
+		uint8_t overflow = 0;
+		if (size >= UART_BUFFER_SIZE) // Check if buffer might be full
+		{
+			// Wait for idle line to ensure complete reception
+			while (__HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE) == RESET) {}
 
-  if (uart_index >= RECEIVE_BUFFER_SIZE) {
-    new_uartstream = false;
-    uart_index = 0;
-    memset(received_buffer, 0, sizeof(received_buffer));
-  }
-  HAL_UART_Receive_IT(&huart1, &uart_received_byte, 1); //Set new interrupt
+			// Check for overflow condition
+			if (__HAL_UART_GET_FLAG(huart, UART_FLAG_ORE) != RESET)
+			{
+				overflow = 1;
+				__HAL_UART_CLEAR_OREFLAG(huart); // Clear overflow flag
+				//HAL_UART_Transmit(huart, (uint8_t *)"\n\rError: overflow of the receive buffer\n\r", 41, 100);
+			}
+		}
+
+		if (!overflow)
+		{
+			rxDataLen = size;
+			new_rxdata = 1;
+		} else {
+			HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rxBuffer, UART_BUFFER_SIZE);
+			__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT); // Disable half-transfer interrupt if not needed
+			//clear buffer (needed after overflow)
+			memset(uart_rxBuffer, 0, UART_BUFFER_SIZE);
+			rxDataLen = 0;
+		}
+	}
 }
 
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+	if (huart->Instance == USART1)
+	{
+		__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_PEF | UART_CLEAR_FEF | UART_CLEAR_NEF | UART_CLEAR_OREF);
+		HAL_UART_Abort_IT(huart);
+		HAL_UART_DeInit(huart);
+		HAL_UART_Init(huart);
+
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rxBuffer, UART_BUFFER_SIZE);
+		__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT); // Disable half-transfer interrupt if not needed
+	}
+}
+
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+//{
+//  timer_lastbyte = TIMER_SET();						     //reset timer (time passed since last recieved byte)
+//  new_uartstream = true;								 //indicate new message
+//  received_buffer[uart_index++] = uart_received_byte;    //copy received byte and shift index
+//
+//  if (uart_index >= RECEIVE_BUFFER_SIZE) {
+//    new_uartstream = false;
+//    uart_index = 0;
+//    memset(received_buffer, 0, sizeof(received_buffer));
+//  }
+//  HAL_UART_Receive_IT(&huart1, &uart_received_byte, 1); //Set new interrupt
+//}
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+//{
+//  timer_lastbyte = TIMER_SET();						     //reset timer (time passed since last recieved byte)
+//  new_uartstream = true;								 //indicate new message
+//  received_buffer[uart_index++] = uart_received_byte;    //copy received byte and shift index
+//
+//  if (uart_index >= RECEIVE_BUFFER_SIZE) {
+//    new_uartstream = false;
+//    uart_index = 0;
+//    memset(received_buffer, 0, sizeof(received_buffer));
+//  }
+//  HAL_UART_Receive_IT(&huart1, &uart_received_byte, 1); //Set new interrupt
+//}
 /* USER CODE END 4 */
 
 /**

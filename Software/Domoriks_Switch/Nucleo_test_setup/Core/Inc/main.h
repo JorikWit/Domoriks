@@ -58,8 +58,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define USART2_TX_Pin GPIO_PIN_2
-#define USART2_TX_GPIO_Port GPIOA
 #define USART2_RX_Pin GPIO_PIN_3
 #define USART2_RX_GPIO_Port GPIOA
 #define L1_Pin GPIO_PIN_5
@@ -93,12 +91,16 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 extern UART_HandleTypeDef huart1;
+extern DMA_HandleTypeDef hdma_usart1_rx;
 
-#define RECEIVE_BUFFER_SIZE 100
-extern uint8_t received_buffer[RECEIVE_BUFFER_SIZE];
-extern uint8_t uart_index;
-extern uint32_t timer_lastbyte;
-extern uint8_t new_uartstream;
+#define UART_BUFFER_SIZE  128
+
+#define MODBUS_ID_ADDRESS  0x08007FFE  // The fixed address where the ID is stored
+extern uint8_t MODBUS_ID;
+
+extern uint8_t uart_rxBuffer[UART_BUFFER_SIZE];
+extern uint8_t new_rxdata;
+extern uint16_t rxDataLen;
 
 /* USER CODE END Private defines */
 

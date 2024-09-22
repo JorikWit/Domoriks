@@ -4,7 +4,6 @@
  *
  * Created on October 5 2023
  */
-
 #ifndef MODBUSM_HANDLER_H
 #define MODBUSM_HANDLER_H
 
@@ -23,16 +22,21 @@ extern uint8_t* modbusInputs;
 extern uint16_t* modbusHReg;
 extern uint16_t* modbusIReg;
 
-//ERRORS
-#define HANDLED_OK                  0x00
-#define ID_MISMATCH                 0x01
-#define INVALID_DATA_LENGHT         0x02
-#define INVALID_COIL_VALUE          0x03
-#define INVALID_FUNCTION            0x10
-#define NOT_IMPLEMENTED             0xFF
+//ERROR
+#define HANDLED_OK              0x00
+#define ID_MISMATCH             0x01
+#define INVALID_DATA_LENGHT     0x02
+#define INVALID_COIL_VALUE      0x03
+#define INVALID_FUNCTION        0x10
+#define NOT_IMPLEMENTED         0xFF
 
 //ERRORS SYNC
-#define SYNC_OK                     0x00
+#define SYNC_OK                 0x00
+
+//ERRORS
+#define ACTION_OK				0x00
+#define WRONG_ACTION_TYPE		0x01
+#define WRONG_ACTION_INPUTNMBR  0x02
 
 //MESSAGE FUNCTIONS
 #define READ_COILS              0x01 
@@ -56,7 +60,6 @@ uint8_t modbusm_handle(ModbusMessage* message);
 uint8_t modbus_set_outputs(void);
 uint8_t modbus_get_outputs(void);
 uint8_t modbus_parse_register(void);
-
-
+uint8_t modbus_parse_action_update(void);
 
 #endif /* MODBUS_FUNCTION_H */

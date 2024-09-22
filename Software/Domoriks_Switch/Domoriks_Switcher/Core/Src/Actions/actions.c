@@ -7,6 +7,7 @@
 
 #include "device_config.h"
 #include "Actions/actions.h"
+#include "main.h"
 
 /*
 typedef struct {
@@ -23,12 +24,12 @@ typedef struct {
 
 const EventAction noAction = {nop, nop, 0, 100, 0, 0, 0, 0};
 
-const EventAction input1_singlePress = {toggle,  off, 2, 100, (DEVICE_ID == 10) ? 20 : 10, 1, 0, 0};
-const EventAction input2_singlePress = {toggle,  off, 2, 100, (DEVICE_ID == 10) ? 20 : 10, 2, 0, 0};
-const EventAction input3_singlePress = {toggle,  off, 2, 100, (DEVICE_ID == 10) ? 20 : 10, 3, 0, 0};
-const EventAction input4_singlePress = {toggle,  off, 2, 100, (DEVICE_ID == 10) ? 20 : 10, 4, 0, 0};
-const EventAction input5_singlePress = {toggle,  off, 2, 100, (DEVICE_ID == 10) ? 20 : 10, 5, 0, 0};
-const EventAction input6_singlePress = {toggle,  off, 2, 100, (DEVICE_ID == 10) ? 20 : 10, 6, 0, 0};
+const EventAction input1_singlePress = {toggle,  nop, 0, 100, 255, 1, 0, 0};
+const EventAction input2_singlePress = {toggle,  nop, 0, 100, 255, 2, 0, 0};
+const EventAction input3_singlePress = {toggle,  nop, 0, 100, 255, 3, 0, 0};
+const EventAction input4_singlePress = {toggle,  nop, 0, 100, 255, 4, 0, 0};
+const EventAction input5_singlePress = {toggle,  nop, 0, 100, 255, 5, 0, 0};
+const EventAction input6_singlePress = {toggle,  nop, 0, 100, 255, 6, 0, 0};
 
 const EventAction input1_doublePress = noAction;//{on, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 1, 0, 0};
 const EventAction input2_doublePress = noAction;

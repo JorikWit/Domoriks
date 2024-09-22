@@ -7,6 +7,7 @@
 
 #include "device_config.h"
 #include "Actions/actions.h"
+#include "main.h"
 
 /*
 typedef struct {
@@ -23,21 +24,21 @@ typedef struct {
 
 const EventAction noAction = {nop, nop, 0, 100, 0, 0, 0, 0};
 
-const EventAction input1_singlePress = {on, off, 3, 100, (DEVICE_ID == 10) ? 20 : 10, 1, 0, 0};
-const EventAction input2_singlePress = {toggle, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 2, 0, 0};
-const EventAction input3_singlePress = {toggle, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 3, 0, 0};
-const EventAction input4_singlePress = {toggle, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 4, 0, 0};
-const EventAction input5_singlePress = {toggle, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 5, 0, 0};
-const EventAction input6_singlePress = {toggle, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 6, 0, 0};
+const EventAction input1_singlePress = {toggle,  off, 0, 100, 255, 1, 0, 0};
+const EventAction input2_singlePress = {toggle,  off, 0, 100, 255, 2, 0, 0};
+const EventAction input3_singlePress = {toggle,  off, 0, 100, 255, 3, 0, 0};
+const EventAction input4_singlePress = {toggle,  off, 0, 100, 255, 4, 0, 0};
+const EventAction input5_singlePress = {toggle,  off, 0, 100, 255, 5, 0, 0};
+const EventAction input6_singlePress = {toggle,  off, 0, 100, 255, 6, 0, 0};
 
-const EventAction input1_doublePress = {on, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 1, 0, 0};
+const EventAction input1_doublePress = noAction;//{on, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 1, 0, 0};
 const EventAction input2_doublePress = noAction;
 const EventAction input3_doublePress = noAction;
 const EventAction input4_doublePress = noAction;
 const EventAction input5_doublePress = noAction;
 const EventAction input6_doublePress = noAction;
 
-const EventAction input1_longPress = {off, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 1, 0, 0};
+const EventAction input1_longPress = noAction;//{off, nop, 0, 100, (DEVICE_ID == 10) ? 20 : 10, 1, 0, 0};
 const EventAction input2_longPress = noAction;
 const EventAction input3_longPress = noAction;
 const EventAction input4_longPress = noAction;
@@ -92,7 +93,7 @@ InputAction inputActions[INPUTS_SIZE] = {
 	{input6_singlePress, input6_doublePress, input6_longPress, input6_on, input6_off}
 };
 
-EventAction extraActions[INPUTS_SIZE * EXTRA_ACTION_PER_INPUT] = {
+EventAction extraActions[(INPUTS_SIZE * EXTRA_ACTION_PER_INPUT)] = {
 		extraAction1,
 		extraAction2,
 		extraAction3,

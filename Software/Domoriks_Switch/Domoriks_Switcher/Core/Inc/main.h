@@ -84,15 +84,17 @@ void Error_Handler(void);
 #define L5_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-//#define USE_FULL_LL_DRIVER
-
 extern UART_HandleTypeDef huart1;
+extern DMA_HandleTypeDef hdma_usart1_rx;
 
-#define RECEIVE_BUFFER_SIZE 100
-extern uint8_t received_buffer[RECEIVE_BUFFER_SIZE];
-extern uint8_t uart_index;
-extern uint32_t timer_lastbyte;
-extern uint8_t new_uartstream;
+#define UART_BUFFER_SIZE  128
+
+#define MODBUS_ID_ADDRESS  0x08007FFE  // The fixed address where the ID is stored
+extern uint8_t MODBUS_ID;
+
+extern uint8_t uart_rxBuffer[UART_BUFFER_SIZE];
+extern uint8_t new_rxdata;
+extern uint16_t rxDataLen;
 
 /* USER CODE END Private defines */
 

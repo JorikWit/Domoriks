@@ -10,6 +10,7 @@
 #include "Flash/flash.h"
 #include "IO/outputs.h"
 #include "timer.h"
+#include "main.h"
  /*
 
 make functionhandler template with switch case struct for all modbus functions
@@ -41,16 +42,15 @@ uint8_t* modbusInputs = mbInputsArray;
 uint16_t* modbusHReg = mbHRegArray;
 uint16_t* modbusIReg = mbIRegArray;
 
-
 uint8_t new_delay_action = 0;
 uint8_t new_action_update = 0;
 
 uint8_t modbusm_handle(ModbusMessage* message) {
-    //check if device ID matches
-    if (message->slave_address != DEVICE_ID) {
-        message = NULL;
-        return ID_MISMATCH;
-    }
+    //check if device ID matches //done in rtu decode
+//    if (message->slave_address != DEVICE_ID) {
+//        message = NULL;
+//        return ID_MISMATCH;
+//    }
 
     //handle message
     switch (message->function_code) {
@@ -68,7 +68,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
 
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_COILS;
         message->data_length = amount_coils % 8 ? 2 + (amount_coils / 8) : 1 + (amount_coils / 8);
         message->data[0] = message->data_length - 1;
@@ -92,7 +92,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
 
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_DISC_INPUTS;
         message->data_length = amount_inputs % 8 ? 2 + (amount_inputs / 8) : 1 + (amount_inputs / 8);
         *message->data = message->data_length - 1;
@@ -116,7 +116,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
 
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_HOLD_REGS;
         message->data_length = 1 + (amount_hregs * 2);
         *message->data = message->data_length - 1;
@@ -138,7 +138,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             return 2;
         }
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_INPUT_REGS;
         message->data_length = 1 + (amount_iregs * 2);
         *message->data = message->data_length - 1;
@@ -329,8 +329,8 @@ uint8_t modbus_parse_action_update(){
 		copyEventAction(&newEventAction, oldEventAction);
 
 		if (save) {
-			Flash_WriteInputActions(inputActions, FLASH_INPUTACTIONS_SIZE);
-			Flash_WriteExtraActions(extraActions, FLASH_EXTRAACTIONS_SIZE);
+			Flash_WriteInputActions(inputActions);
+			Flash_WriteExtraActions(extraActions);
 		}
 	}
 	return ACTION_OK;

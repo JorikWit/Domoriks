@@ -7,8 +7,10 @@
 
 #include "Modbus/modbusm_handler.h"
 #include "Actions/actions.h"
+#include "Flash/flash.h"
 #include "IO/outputs.h"
 #include "timer.h"
+#include "main.h"
  /*
 
 make functionhandler template with switch case struct for all modbus functions
@@ -40,15 +42,15 @@ uint8_t* modbusInputs = mbInputsArray;
 uint16_t* modbusHReg = mbHRegArray;
 uint16_t* modbusIReg = mbIRegArray;
 
-
 uint8_t new_delay_action = 0;
+uint8_t new_action_update = 0;
 
 uint8_t modbusm_handle(ModbusMessage* message) {
-    //check if device ID matches
-    if (message->slave_address != DEVICE_ID) {
-        message = NULL;
-        return ID_MISMATCH;
-    }
+    //check if device ID matches //done in rtu decode
+//    if (message->slave_address != DEVICE_ID) {
+//        message = NULL;
+//        return ID_MISMATCH;
+//    }
 
     //handle message
     switch (message->function_code) {
@@ -66,7 +68,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
 
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_COILS;
         message->data_length = amount_coils % 8 ? 2 + (amount_coils / 8) : 1 + (amount_coils / 8);
         message->data[0] = message->data_length - 1;
@@ -90,7 +92,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
 
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_DISC_INPUTS;
         message->data_length = amount_inputs % 8 ? 2 + (amount_inputs / 8) : 1 + (amount_inputs / 8);
         *message->data = message->data_length - 1;
@@ -114,7 +116,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
 
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_HOLD_REGS;
         message->data_length = 1 + (amount_hregs * 2);
         *message->data = message->data_length - 1;
@@ -136,7 +138,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             return 2;
         }
         //reply
-        message->slave_address = DEVICE_ID;
+        message->slave_address = MODBUS_ID;
         message->function_code = READ_INPUT_REGS;
         message->data_length = 1 + (amount_iregs * 2);
         *message->data = message->data_length - 1;
@@ -252,7 +254,7 @@ uint8_t modbus_parse_register(){
 		//uint8_t pwm = (mbHRegArray[3] >> 8) & 0xFF;
 
 		if (coil_data == 0x5555) {
-			outputs[coil_i].param.delay_value = outputs[mbHRegArray[coil_i]].param.value;
+			outputs[coil_i].param.delay_value = !outputs[coil_i].param.value;
 		} else if (coil_data == 0xFF00) {
 			outputs[coil_i].param.delay_value = 1;
 		} else if (coil_data == 0x0000) {
@@ -267,9 +269,69 @@ uint8_t modbus_parse_register(){
 			outputs[coil_i].param.value = outputs[coil_i].param.value; //nop
 		}
 		outputs[coil_i].param.delay = delay;
-		outputs[coil_i].param.startTimer = TIMER_SET();
+		if (delay != 0)
+			outputs[coil_i].param.startTimer = TIMER_SET();
+
 		new_delay_action = 0;
 	}
-
 	return SYNC_OK;
+}
+
+uint8_t modbus_parse_action_update(){
+	if (new_action_update) {
+		uint8_t inputNumber = (mbHRegArray[0] >> 8 & 0xFF);
+		uint8_t actionType = (mbHRegArray[0] & 0xFF);      //single, double, long, switchon, switchoff, extra
+
+		EventAction newEventAction;
+
+		newEventAction.action = (mbHRegArray[1] >> 8 & 0xFF);
+		newEventAction.delayAction = (mbHRegArray[1] & 0xFF);
+		newEventAction.delay = (uint32_t)(((mbHRegArray[2] >> 8 & 0xFF) << 16) | (mbHRegArray[2] & 0xFF));
+		newEventAction.pwm = (mbHRegArray[3] >> 8 & 0xFF);
+		newEventAction.id = (mbHRegArray[3] & 0xFF);
+		newEventAction.output = (mbHRegArray[4] >> 8 & 0xFF);
+		newEventAction.send = (mbHRegArray[4] & 0xFF);
+		newEventAction.extraEventId = (mbHRegArray[5] >> 8 & 0xFF);
+		uint8_t save = (mbHRegArray[5] & 0xFF);
+
+
+		EventAction* oldEventAction;
+
+		if (inputNumber < (EXTRA_ACTION_PER_INPUT * INPUTS_SIZE) &&
+			actionType == 6)  {
+			oldEventAction = &extraActions[inputNumber];
+		}
+		else if (inputNumber < INPUTS_SIZE) {
+			switch (actionType) {
+			case 1:
+				oldEventAction = &inputActions[inputNumber].singlePress;
+				break;
+			case 2:
+				oldEventAction = &inputActions[inputNumber].doublePress;
+				break;
+			case 3:
+				oldEventAction = &inputActions[inputNumber].longPress;
+				break;
+			case 4:
+				oldEventAction = &inputActions[inputNumber].switchOn;
+				break;
+			case 5:
+				oldEventAction = &inputActions[inputNumber].switchOff;
+				break;
+			default:
+				return WRONG_ACTION_TYPE;
+			}
+		}
+		else {
+			return WRONG_ACTION_INPUTNMBR;
+		}
+
+		copyEventAction(&newEventAction, oldEventAction);
+
+		if (save) {
+			Flash_WriteInputActions(inputActions);
+			Flash_WriteExtraActions(extraActions);
+		}
+	}
+	return ACTION_OK;
 }

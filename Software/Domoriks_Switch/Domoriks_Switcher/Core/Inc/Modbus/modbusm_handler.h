@@ -4,7 +4,6 @@
  *
  * Created on October 5 2023
  */
-
 #ifndef MODBUSM_HANDLER_H
 #define MODBUSM_HANDLER_H
 
@@ -62,7 +61,5 @@ uint8_t modbus_set_outputs(void);
 uint8_t modbus_get_outputs(void);
 uint8_t modbus_parse_register(void);
 uint8_t modbus_parse_action_update(void);
-
-
 
 #endif /* MODBUS_FUNCTION_H */

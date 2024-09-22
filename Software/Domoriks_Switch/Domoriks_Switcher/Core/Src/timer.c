@@ -1,4 +1,4 @@
-/*
+/* 
  * File:   timer.h
  * Author: Jorik Wittevrongel
  *

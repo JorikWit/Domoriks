@@ -11,7 +11,7 @@
 //#include "IO/inputs.h"
 //#include "IO/outputs.h"
 
-#define DEVICE_ID 10
+//#define DEVICE_ID 10
 
 #define BAUDRATE 115200
 
@@ -23,4 +23,4 @@
 //#define HOLD_REGS_SIZE (OUTPUTS_SIZE + (INPUTS_SIZE * 10)) //
 //#define INPUTS_REGS_SIZE 1 //not used I think
 
-#endif //DEVICE_CONFIG_Hs
+#endif //DEVICE_CONFIG_H

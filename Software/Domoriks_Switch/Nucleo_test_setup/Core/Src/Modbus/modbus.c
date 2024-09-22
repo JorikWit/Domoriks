@@ -29,41 +29,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define REPLY_BUFFER_SIZE 100
-uint8_t reply_buffer[REPLY_BUFFER_SIZE];
+uint8_t uart_txBuffer[UART_BUFFER_SIZE] = {0};
+uint16_t txDataLen = 0;
 
 ModbusMessage recieved_message;
 size_t length;
 
-uint8_t wait_for_response = false;
+uint8_t waiting4response = 0;
+uint32_t timer_wait4response = 0;
+
+uint32_t resend_timer;
+uint8_t resend_count = 0;
+
+ModbusMessage send_message;
 
 void recieve() {
-	//__disable_irq(); //disable interrupt so incomming data isnt distorded
-	memset(reply_buffer, 0, sizeof(reply_buffer));
-	if (decode_modbus_rtu(received_buffer, uart_index, &recieved_message) == 0) {
+	memset(uart_txBuffer, 0, UART_BUFFER_SIZE);
+	if (decode_modbus_rtu(uart_rxBuffer, rxDataLen, &recieved_message) == 0) {
 		//handle message
-		if (modbusm_handle(&recieved_message) != 1) { //TODO check more then ID mismatch
-
+		if (modbusm_handle(&recieved_message) != 1) {
 			//send reply
 			length = 0;
-			encode_modbus_rtu(reply_buffer, &length, &recieved_message);
+			encode_modbus_rtu(uart_txBuffer, &length, &recieved_message);
+			txDataLen = length;
 			HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 1); //Set RS485 in write mode
-			HAL_UART_Transmit(&huart1, reply_buffer, length, 2 * length * UART_BYTE_TIME_MS());
+			HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
 			HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
 		}
 	} else {
 		//message not modbus rtu;
 	}
 	//reset for new message
-	new_uartstream = false;
-	uart_index = 0;
-	memset(received_buffer, 0, sizeof(received_buffer));
-	//__enable_irq();
+	new_rxdata = 0;
+	HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rxBuffer, UART_BUFFER_SIZE);
+	__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT); // Disable half-transfer interrupt if not needed
+	memset(uart_rxBuffer, 0, UART_BUFFER_SIZE);
+	rxDataLen = 0;
 }
 
-#define SEND_BUFFER_SIZE 100
-uint8_t send_buffer[REPLY_BUFFER_SIZE];
-ModbusMessage send_message;
 
 void send(){
 	for (int i = 0; i < INPUTS_SIZE; i++) {
@@ -83,6 +86,14 @@ void send(){
 
 		if (event != NULL) {
 			if (event->send == 1) {
+				if (event->delayAction != nop && event->delay != 0){
+					event->send = 2;
+				} else if (event->extraEventId != 0){
+					event->send = 3;
+				} else {
+					event->send = 0;
+				}
+
 				uint16_t coil_data = 0x1111; //invalid data
 				// Handle the action
 				if (event->action == toggle) {
@@ -93,14 +104,6 @@ void send(){
 					coil_data = 0x0000;
 				} else {
 
-				}
-
-				if ((event->delayAction != nop && event->delay != 0) || event->pwm != 100){
-					event->send = 2;
-				} else if (event->extraEventId != 0){
-					event->send = 3;
-				} else {
-					event->send = 0;
 				}
 
 				if (event->action != nop) {
@@ -116,15 +119,18 @@ void send(){
 					send_message.data[3] = coil_data & 0xFF;
 
 					// Set RS485 in write mode and transmit the message
+					encode_modbus_rtu(uart_txBuffer, &length, &send_message);
+					txDataLen = length;
 					HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_SET);
-					encode_modbus_rtu(send_buffer, &length, &send_message);
-					HAL_UART_Transmit(&huart1, send_buffer, length, 2 * length * UART_BYTE_TIME_MS());
+					HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
 					HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_RESET); // Set RS485 in read mode
-					wait_for_response = true;
+					HAL_Delay(UART_BYTE_TIME_MS() * 2);
+					resend_timer = TIMER_SET();
+					waiting4response = 1;
 					return;
 				}
 			} else if (event->send == 2){
-				//send delay or brightness
+				//send delay
 
 				// Construct and send a Modbus message to the active address
 				send_message.slave_address = event->id;
@@ -137,7 +143,7 @@ void send(){
 				send_message.data[3] = quantity_of_registers & 0xFF;
 				send_message.data[4] = 8; // Number of data bytes
 
-				uint8_t coil_address = event->output-1;
+				uint8_t coil_address = event->output - 1;
 				uint16_t coil_data = 0x1111; //invalid data
 				if (event->delayAction == toggle) {
 					coil_data = 0x5555;				//Domoriks only less data on the bus + faster execution
@@ -164,11 +170,14 @@ void send(){
 				send_message.data_length = 13; // Data length (address + quantity + byte count + data)
 
 				// Set RS485 in write mode and transmit the message
+				encode_modbus_rtu(uart_txBuffer, &length, &send_message);
+				txDataLen = length;
 				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_SET);
-				encode_modbus_rtu(send_buffer, &length, &send_message);
-				HAL_UART_Transmit(&huart1, send_buffer, length, 2 * length * UART_BYTE_TIME_MS());
+				HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
 				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_RESET); // Set RS485 in read mode
-				wait_for_response = true;
+				HAL_Delay(UART_BYTE_TIME_MS() * 2);
+				resend_timer = TIMER_SET();
+				waiting4response = 1;
 
 				if (event->extraEventId != 0){
 					event->send = 3;
@@ -195,32 +204,56 @@ void send(){
 }
 
 
-void response(){
+void response() {
+	if (new_rxdata) {
+		if (decode_modbus_rtu(uart_rxBuffer, rxDataLen, &recieved_message) == 0) {
 
-	//TODO wait for correct response timeout & resend
+			//check if message is equal to message send
+			waiting4response = 0;
+			resend_count = 0;
+		} else {
+			//message not modbus rtu;
+			waiting4response = 0;
+			resend_count = 0;
+		}
 
-	__disable_irq(); //disable interrupt so incomming data isnt distorded
-	memset(reply_buffer, 0, sizeof(reply_buffer));
-	if (decode_modbus_rtu(received_buffer, uart_index, &recieved_message) == 0) {
+		//reset for new message
+		new_rxdata = 0;
 
-		//check if message is equal to message send
-		wait_for_response = false;
-	} else {
-		//message not modbus rtu;
+		new_rxdata = 0;
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart1, uart_rxBuffer, UART_BUFFER_SIZE);
+		__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT); // Disable half-transfer interrupt if not needed
+		memset(uart_rxBuffer, 0, UART_BUFFER_SIZE);
+		rxDataLen = 0;
 	}
-	//reset for new message
-	new_uartstream = false;
-	uart_index = 0;
-	memset(received_buffer, 0, sizeof(received_buffer));
-	__enable_irq();
+
+	if (TIMER_ELAPSED_MS(resend_timer, 50) && waiting4response) {  //resend
+		HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_SET);
+		HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
+		HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_RESET); // Set RS485 in read mode
+		resend_timer = TIMER_SET();
+		waiting4response = 0;
+		resend_count++;
+	}
+
+	if (resend_count == 5) {
+		waiting4response = 0;
+		resend_count = 0;
+	}
 }
 
 void modbus() {
-	if (TIMER_ELAPSED_MS(timer_lastbyte,  UART_BYTE_TIME_MS()) && new_uartstream && wait_for_response) {
+	if (waiting4response)
+	{
 		response();
-	} else if (TIMER_ELAPSED_MS(timer_lastbyte,  UART_BYTE_TIME_MS()) && new_uartstream) { //timer_lastbyte define in main
+	}
+	else if (new_rxdata)
+	{
 		recieve();
-	} else if (TIMER_ELAPSED_MS(timer_lastbyte, DEVICE_ID * UART_BYTE_TIME_MS())){ //timer_lastbyte define in main
+	}
+	else
+	{
+		//wait4idle?
 		send();
 	}
 }

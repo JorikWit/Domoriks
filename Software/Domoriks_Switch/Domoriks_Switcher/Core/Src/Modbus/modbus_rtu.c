@@ -27,7 +27,13 @@ uint16_t calculate_crc(const uint8_t* data, size_t length) {  //it is possible t
 uint8_t decode_modbus_rtu(uint8_t* message, size_t length, ModbusMessage* decoded) {
 	//check length slave_addr, fucn_code, 1 data, 2 crc min.
 	if (length <= 5)
-		return 1; //Error
+		return 255; //Error
+
+	if (message[0] == 0)
+		return 255; //Error
+
+	if (message[0] != MODBUS_ID)
+		return message[0]; //Error
 	//check CRC
     uint16_t crc_calc = calculate_crc(message, length - 2); //length with crc
     uint16_t crc_recv = (uint16_t)(message[length - 2] << 8) | (uint16_t)(message[length - 1]);

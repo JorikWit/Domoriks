@@ -17,7 +17,7 @@
 #include <assert.h>
 
 #define USERDATA_ORIGIN     0x08007000
-#define USERDATA_LENGTH     0x1000
+#define USERDATA_LENGTH     0x800 - 1
 
 // Calculate start addresses based on USERDATA_ORIGIN
 #define FLASH_INPUTS_ADDR           USERDATA_ORIGIN
@@ -36,13 +36,14 @@
 
 static_assert(TOTAL_SIZE_REQUIRED <= USERDATA_LENGTH, "Total size of inputs, inputActions, and extraActions exceeds USERDATA_LENGTH!");
 
-HAL_StatusTypeDef Flash_WriteInputs(Input *inputs, uint32_t size);
-HAL_StatusTypeDef Flash_ReadInputs(Input *inputs, uint32_t size);
-HAL_StatusTypeDef Flash_WriteInputActions(InputAction *inputActions, uint32_t size);
-HAL_StatusTypeDef Flash_ReadInputActions(InputAction *inputActions, uint32_t size);
-HAL_StatusTypeDef Flash_WriteExtraActions(EventAction *extraActions, uint32_t size);
-HAL_StatusTypeDef Flash_ReadExtraActions(EventAction *extraActions, uint32_t size);
-HAL_StatusTypeDef Flash_WriteOutputs(Output *outputs, uint32_t size);
-HAL_StatusTypeDef Flash_ReadOutputs(Output *outputs, uint32_t size);
+HAL_StatusTypeDef Flash_Erase(uint32_t addr, uint32_t size);
+HAL_StatusTypeDef Flash_WriteInputs(Input *inputs);
+HAL_StatusTypeDef Flash_ReadInputs(Input *inputs);
+HAL_StatusTypeDef Flash_WriteInputActions(InputAction *inputActions);
+HAL_StatusTypeDef Flash_ReadInputActions(InputAction *inputActions);
+HAL_StatusTypeDef Flash_WriteExtraActions(EventAction *extraActions);
+HAL_StatusTypeDef Flash_ReadExtraActions(EventAction *extraActions);
+HAL_StatusTypeDef Flash_WriteOutputs(Output *outputs);
+HAL_StatusTypeDef Flash_ReadOutputs(Output *outputs);
 
 #endif /* INC_FLASH_FLASH_H_ */

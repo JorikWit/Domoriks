@@ -15,6 +15,7 @@ typedef struct {             //Combine with Inputparam in IO param
 	uint16_t pin;
   	const int port;
   	uint8_t value;
+  	uint8_t invert;
   	uint8_t min;
   	uint8_t max;
   	uint16_t delay;
