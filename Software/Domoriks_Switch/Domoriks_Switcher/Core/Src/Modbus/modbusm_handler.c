@@ -59,7 +59,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         uint16_t first_coil = 0;
         uint16_t amount_coils = 0;
         if (message->data_length == 4) {
-            first_coil = (message->data[0] << 8 | message->data[1]);
+            first_coil = (message->data[0] << 8 | message->data[1]) - 1;
             amount_coils = (message->data[2] << 8 | message->data[3]);
         }
         else {
@@ -83,7 +83,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         uint16_t first_input = 0;
         uint16_t amount_inputs = 0;
         if (message->data_length == 4) {
-            first_input = (message->data[0] << 8 | message->data[1]);
+            first_input = (message->data[0] << 8 | message->data[1]) - 1;
             amount_inputs = (message->data[2] << 8 | message->data[3]);
         }
         else {
@@ -152,7 +152,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         uint16_t coil_adress = 0;
         uint16_t value = 0;
         if (message->data_length == 4) {
-            coil_adress = (message->data[0] << 8 | message->data[1]);
+            coil_adress = (message->data[0] << 8 | message->data[1]) - 1;
             value = (message->data[2] << 8 | message->data[3]);
         }
         else {
@@ -248,10 +248,10 @@ uint8_t modbus_set_outputs() {
 
 uint8_t modbus_parse_register(){
 	if (new_delay_action) {
-		uint16_t coil_i = mbHRegArray[0];
+		uint16_t coil_i = mbHRegArray[0] - 1;
 		uint16_t coil_data = mbHRegArray[1];
 		uint16_t delay = mbHRegArray[2];
-		//uint8_t pwm = (mbHRegArray[3] >> 8) & 0xFF;
+		uint8_t pwm = (mbHRegArray[3] >> 8) & 0xFF;
 
 		if (coil_data == 0x5555) {
 			outputs[coil_i].param.delay_value = !outputs[coil_i].param.value;
@@ -328,9 +328,13 @@ uint8_t modbus_parse_action_update(){
 
 		copyEventAction(&newEventAction, oldEventAction);
 
+
 		if (save) {
+		    Flash_Erase(USERDATA_ORIGIN, USERDATA_LENGTH);
+			Flash_WriteInputs(inputs);
 			Flash_WriteInputActions(inputActions);
 			Flash_WriteExtraActions(extraActions);
+			Flash_WriteOutputs(outputs);
 		}
 	}
 	return ACTION_OK;

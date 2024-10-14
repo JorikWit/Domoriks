@@ -130,9 +130,7 @@ void send(){
 					return;
 				}
 			} else if (event->send == 2){
-				//send delay
-
-				// Construct and send a Modbus message to the active address
+				//send delay action
 				send_message.slave_address = event->id;
 				send_message.function_code = WRITE_MULTI_REGS;
 				uint16_t starting_address = 0x0000;
@@ -156,8 +154,9 @@ void send(){
 				} else if (event->delayAction == offdelayon) {
 					coil_data = 0x00F0;
 				}
-				send_message.data[5] = (coil_address >> 8) & 0xFF;
-				send_message.data[6] = coil_address && 0xFF;
+				send_message.data[5] = 0x00;
+				send_message.data[6] = coil_address;
+
 				send_message.data[7] = (coil_data >> 8) & 0xFF;
 				send_message.data[8] = coil_data & 0xFF;
 
@@ -253,7 +252,6 @@ void modbus() {
 	}
 	else
 	{
-		//wait4idle?
 		send();
 	}
 }

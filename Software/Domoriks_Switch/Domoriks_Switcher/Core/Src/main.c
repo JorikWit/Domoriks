@@ -83,9 +83,8 @@ static void MX_IWDG_Init(void);
 uint8_t MODBUS_ID;
 //#define UPLOAD_NEW_MODBUS_ID
 #ifdef UPLOAD_NEW_MODBUS_ID
-  __attribute__((section(".modbus_id"))) const uint8_t new_id = 20;  // Logic ID, e.g., 1
+  __attribute__((section(".modbus_id"))) const uint8_t new_id = 10;  // Logic ID, e.g., 1
 #endif
-
 //#define NEWACTIONS
 
 uint8_t uart_rxBuffer[UART_BUFFER_SIZE] = { 0 };
@@ -170,56 +169,17 @@ int main(void)
   HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
 
 #ifdef NEWACTIONS
-  inputActions[0].singlePress.id = 64;
-  inputActions[1].singlePress.id = 64;
-  inputActions[2].singlePress.id = 64;
-  inputActions[3].singlePress.id = 64;
-  inputActions[4].singlePress.id = 64;
-  inputActions[5].singlePress.id = 64;
-
-  inputActions[0].singlePress.action = nop;
-
-  //inputActions[0].singlePress.output = 3;
-  inputActions[1].singlePress.output = 3;
-  inputActions[2].singlePress.output = 4;
-  inputActions[3].singlePress.output = 5;
-  inputActions[4].singlePress.output = 5;
-  inputActions[5].singlePress.output = 6;
-
-  inputActions[0].longPress.extraEventId = 1;
-
-  extraActions[0].action = off;
-  extraActions[1].action = off;
-  extraActions[2].action = off;
-  extraActions[3].action = off;
-
-  extraActions[0].id = 64;
-  extraActions[1].id = 64;
-  extraActions[2].id = 64;
-  extraActions[3].id = 64;
-
-  extraActions[0].output = 3;
-  extraActions[1].output = 4;
-  extraActions[2].output = 5;
-  extraActions[3].output = 6;
-
-  extraActions[0].extraEventId = 2;
-  extraActions[1].extraEventId = 3;
-  extraActions[2].extraEventId = 4;
-  extraActions[3].extraEventId = 255; //restore
-
-
   Flash_Erase(USERDATA_ORIGIN, USERDATA_LENGTH);
-  Flash_WriteInputActions(inputActions);
   Flash_WriteInputs(inputs);
+  Flash_WriteInputActions(inputActions);
   Flash_WriteExtraActions(extraActions);
   Flash_WriteOutputs(outputs);
 #endif
 
+  Flash_ReadInputs(inputs);
   Flash_ReadInputActions(inputActions);
-//  Flash_ReadInputs(inputs);
   Flash_ReadExtraActions(extraActions);
-//  Flash_ReadOutputs(outputs);
+  Flash_ReadOutputs(outputs);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -237,14 +197,8 @@ int main(void)
 
     if (TIMER_ELAPSED_MS(timer_blink, 1000)) {
       timer_blink = TIMER_SET();
-      //outputs[0].param.value = !outputs[0].param.value;
-      //HAL_Delay(250);
+
     }
-
-    //uart IT superviser
-    //needed?
-
-
     //read inputs
     update_inputs();
 
