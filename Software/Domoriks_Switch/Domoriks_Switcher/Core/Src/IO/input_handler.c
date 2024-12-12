@@ -44,19 +44,20 @@ void input_handler(){
         !inputs[i].param.value) {								//is the button released
 
         //Single press ACTION
-        //outputs[i].param.value = !outputs[i].param.value;		//toggle same output
+        //outputs[i].param.value = !outputs[i].param.value;		//toggle same output (for DEBUG)
     	inputActions[i].singlePress.send = true;
 
         //Double press
         if (TIMER_ELAPSED_MS(timer_doublePress, 500)) {			//if timer is older the
-          timer_doublePress = TIMER_SET();					//reset timer
-          timed_doublepress_index = i;					    //register that this input is currently timed
+          timer_doublePress = TIMER_SET();						//reset timer
+          timed_doublepress_index = i;					    	//register that this input is currently timed
         }
-        else {												//if pressed again within 500ms of previous press
+        else {													//if pressed again within 500ms of previous press
           if (timed_doublepress_index == i) {					//check if this input is timed
 
             //Double press ACTION
         	inputActions[i].doublePress.send = true;
+        	inputActions[i].singlePress.send = false;
           }
         }
       }
@@ -73,7 +74,7 @@ void input_handler(){
         inputs[i].param.value &&								//is the button preset down
         timed_longpress_index == i &&							//check if timer is running for this input
 		!skip_next_release &&									//Release first before triggering again (without single press action trigger)
-		TIMER_ELAPSED_MS(timer_longPress, 1500)) {					//long press timer if elapsed & button is still pressed -> long press
+		TIMER_ELAPSED_MS(timer_longPress, 1500)) {				//long press timer if elapsed & button is still pressed -> long press
 
         //Long press ACTION
     	inputActions[i].longPress.send = true;

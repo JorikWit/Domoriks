@@ -49,12 +49,14 @@ void recieve() {
 		//handle message
 		if (modbusm_handle(&recieved_message) != 1) {
 			//send reply
-			length = 0;
-			encode_modbus_rtu(uart_txBuffer, &length, &recieved_message);
-			txDataLen = length;
-			HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 1); //Set RS485 in write mode
-			HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
-			HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
+			if (recieved_message.slave_address != 250) {
+				length = 0;
+				encode_modbus_rtu(uart_txBuffer, &length, &recieved_message);
+				txDataLen = length;
+				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 1); //Set RS485 in write mode
+				HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
+				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
+			}
 		}
 	} else {
 		//message not modbus rtu;
@@ -66,7 +68,6 @@ void recieve() {
 	memset(uart_rxBuffer, 0, UART_BUFFER_SIZE);
 	rxDataLen = 0;
 }
-
 
 void send(){
 	for (int i = 0; i < INPUTS_SIZE; i++) {

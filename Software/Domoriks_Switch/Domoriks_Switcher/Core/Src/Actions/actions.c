@@ -24,7 +24,7 @@ typedef struct {
 
 const EventAction noAction = {nop, nop, 0, 100, 0, 0, 0, 0};
 //{toggle, nop, 0, 100, 64, 6, 0, 0}
-const EventAction input1_singlePress = {toggle, nop, 0, 100, 64, 6, 0, 1};
+const EventAction input1_singlePress = noAction; //{toggle, nop, 0, 100, 64, 6, 0, 1};
 const EventAction input2_singlePress = noAction;
 const EventAction input3_singlePress = noAction;
 const EventAction input4_singlePress = noAction;
@@ -59,30 +59,25 @@ const EventAction input4_off = noAction;
 const EventAction input5_off = noAction;
 const EventAction input6_off = noAction;
 
-const EventAction extraAction1 = {toggle, nop, 0, 100, 64, 5, 0, 2};
-const EventAction extraAction2 = {toggle, nop, 0, 100, 64, 4, 0, 3};
-const EventAction extraAction3 = {toggle, nop, 0, 100, 64, 3, 0, 4};
-
-const EventAction extraAction4 = {toggle, nop, 0, 100, 65, 6, 0, 5};
-const EventAction extraAction5 = {toggle, nop, 0, 100, 65, 5, 0, 6};
-const EventAction extraAction6 = {toggle, nop, 0, 100, 65, 4, 0, 7};
-const EventAction extraAction7 = {toggle, nop, 0, 100, 65, 3, 0, 8};
-
-const EventAction extraAction8 = {toggle, nop, 0, 100, 66, 6, 0, 9};
-const EventAction extraAction9 = {toggle, nop, 0, 100, 66, 5, 0, 10};
-const EventAction extraAction10 = {toggle, nop, 0, 100, 66, 4, 0, 11};
-const EventAction extraAction11 = {toggle, nop, 0, 100, 66, 3, 0, 12};
-
-const EventAction extraAction12 = {toggle, nop, 0, 100, 67, 6, 0, 13};
-const EventAction extraAction13 = {toggle, nop, 0, 100, 67, 5, 0, 14};
-const EventAction extraAction14 = {toggle, nop, 0, 100, 67, 4, 0, 15};
-const EventAction extraAction15 = {toggle, nop, 0, 100, 67, 3, 0, 16};
-
-const EventAction extraAction16 = {toggle, nop, 0, 100, 68, 6, 0, 17};
-const EventAction extraAction17 = {toggle, nop, 0, 100, 68, 5, 0, 18};
-const EventAction extraAction18 = {toggle, nop, 0, 100, 68, 4, 0, 19};
-const EventAction extraAction19 = {toggle, nop, 0, 100, 68, 3, 0, 20};
-
+const EventAction extraAction1 = noAction;
+const EventAction extraAction2 = noAction;
+const EventAction extraAction3 = noAction;
+const EventAction extraAction4 = noAction;
+const EventAction extraAction5 = noAction;
+const EventAction extraAction6 = noAction;
+const EventAction extraAction7 = noAction;
+const EventAction extraAction8 = noAction;
+const EventAction extraAction9 = noAction;
+const EventAction extraAction10 = noAction;
+const EventAction extraAction11 = noAction;
+const EventAction extraAction12 = noAction;
+const EventAction extraAction13 = noAction;
+const EventAction extraAction14 = noAction;
+const EventAction extraAction15 = noAction;
+const EventAction extraAction16 = noAction;
+const EventAction extraAction17 = noAction;
+const EventAction extraAction18 = noAction;
+const EventAction extraAction19 = noAction;
 const EventAction extraAction20 = noAction;
 const EventAction extraAction21 = noAction;
 const EventAction extraAction22 = noAction;

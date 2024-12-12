@@ -59,7 +59,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         uint16_t first_coil = 0;
         uint16_t amount_coils = 0;
         if (message->data_length == 4) {
-            first_coil = (message->data[0] << 8 | message->data[1]) - 1;
+            first_coil = (message->data[0] << 8 | message->data[1]);
             amount_coils = (message->data[2] << 8 | message->data[3]);
         }
         else {
@@ -83,7 +83,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         uint16_t first_input = 0;
         uint16_t amount_inputs = 0;
         if (message->data_length == 4) {
-            first_input = (message->data[0] << 8 | message->data[1]) - 1;
+            first_input = (message->data[0] << 8 | message->data[1]);
             amount_inputs = (message->data[2] << 8 | message->data[3]);
         }
         else {
@@ -152,7 +152,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         uint16_t coil_adress = 0;
         uint16_t value = 0;
         if (message->data_length == 4) {
-            coil_adress = (message->data[0] << 8 | message->data[1]) - 1;
+            coil_adress = (message->data[0] << 8 | message->data[1]);
             value = (message->data[2] << 8 | message->data[3]);
         }
         else {

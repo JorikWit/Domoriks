@@ -32,8 +32,10 @@ uint8_t decode_modbus_rtu(uint8_t* message, size_t length, ModbusMessage* decode
 	if (message[0] == 0)
 		return 255; //Error
 
-	if (message[0] != MODBUS_ID)
+	if (message[0] != MODBUS_ID && message[0] != 250) {
 		return message[0]; //Error
+	}
+
 	//check CRC
     uint16_t crc_calc = calculate_crc(message, length - 2); //length with crc
     uint16_t crc_recv = (uint16_t)(message[length - 2] << 8) | (uint16_t)(message[length - 1]);

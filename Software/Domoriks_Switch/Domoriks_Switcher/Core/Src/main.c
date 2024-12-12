@@ -39,6 +39,8 @@
 #include "Modbus/modbus_ascii.h"
 #include "Modbus/modbus_rtu.h"
 #include "Modbus/modbusm_handler.h"
+
+#include "Actions/actions.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -83,9 +85,9 @@ static void MX_IWDG_Init(void);
 uint8_t MODBUS_ID;
 //#define UPLOAD_NEW_MODBUS_ID
 #ifdef UPLOAD_NEW_MODBUS_ID
-  __attribute__((section(".modbus_id"))) const uint8_t new_id = 10;  // Logic ID, e.g., 1
+  __attribute__((section(".modbus_id"))) const uint8_t new_id = 9;  // Logic ID, e.g., 1
 #endif
-//#define NEWACTIONS
+#define NEWACTIONS
 
 uint8_t uart_rxBuffer[UART_BUFFER_SIZE] = { 0 };
 uint8_t new_rxdata = 0;
@@ -169,6 +171,39 @@ int main(void)
   HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
 
 #ifdef NEWACTIONS
+  EventAction input1_singlePress = 	{ toggle, 	nop, 0, 	100, 66, 3, 0, 0 };
+  EventAction input1_longPress = 	{ off, 		nop, 0, 	100, 66, 3, 0, 1 };
+  EventAction input2_singlePress = 	{ toggle,	nop, 0, 	100, 65, 1, 0, 0 };
+  EventAction input3_singlePress = 	{ on, 		off, 600, 	100, 68, 4, 0, 0 };
+
+  EventAction extraAction1 = 		{ off, 		nop, 0, 	100, 65, 1, 0, 255 };
+
+  memcpy((uint8_t*)&inputActions[0].singlePress, (uint8_t*)&input1_singlePress, sizeof(EventAction));
+  memcpy((uint8_t*)&inputActions[1].singlePress, (uint8_t*)&input2_singlePress, sizeof(EventAction));
+  memcpy((uint8_t*)&inputActions[2].singlePress, (uint8_t*)&input3_singlePress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[3].singlePress, (uint8_t*)&input4_singlePress, sizeof(EventAction));
+
+//  memcpy((uint8_t*)&inputActions[0].doublePress, (uint8_t*)&input1_doublePress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[1].doublePress, (uint8_t*)&input2_doublePress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[2].doublePress, (uint8_t*)&input3_doublePress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[3].doublePress, (uint8_t*)&input4_doublePress, sizeof(EventAction));
+
+  memcpy((uint8_t*)&inputActions[0].longPress, (uint8_t*)&input1_longPress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[1].longPress, (uint8_t*)&input2_longPress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[2].longPress, (uint8_t*)&input3_longPress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[3].longPress, (uint8_t*)&input4_longPress, sizeof(EventAction));
+
+  memcpy((uint8_t*)&extraActions[0], (uint8_t*)&extraAction1, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[1], (uint8_t*)&extraAction2, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[2], (uint8_t*)&extraAction3, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[3], (uint8_t*)&extraAction4, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[4], (uint8_t*)&extraAction5, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[5], (uint8_t*)&extraAction6, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[6], (uint8_t*)&extraAction7, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[7], (uint8_t*)&extraAction8, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[8], (uint8_t*)&extraAction9, sizeof(EventAction));
+//  memcpy((uint8_t*)&extraActions[9], (uint8_t*)&extraAction10, sizeof(EventAction));
+
   Flash_Erase(USERDATA_ORIGIN, USERDATA_LENGTH);
   Flash_WriteInputs(inputs);
   Flash_WriteInputActions(inputActions);
@@ -180,6 +215,7 @@ int main(void)
   Flash_ReadInputActions(inputActions);
   Flash_ReadExtraActions(extraActions);
   Flash_ReadOutputs(outputs);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
