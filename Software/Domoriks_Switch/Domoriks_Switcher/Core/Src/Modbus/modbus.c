@@ -53,6 +53,7 @@ void recieve() {
 				length = 0;
 				encode_modbus_rtu(uart_txBuffer, &length, &recieved_message);
 				txDataLen = length;
+
 				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 1); //Set RS485 in write mode
 				HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
 				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
@@ -125,7 +126,8 @@ void send(){
 					HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_SET);
 					HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
 					HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_RESET); // Set RS485 in read mode
-					HAL_Delay(UART_BYTE_TIME_MS() * 2);
+					uint32_t start = HAL_GetTick();
+					while ((HAL_GetTick() - start) < UART_BYTE_TIME_US())
 					resend_timer = TIMER_SET();
 					waiting4response = 1;
 					return;
@@ -175,7 +177,9 @@ void send(){
 				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_SET);
 				HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
 				HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_RESET); // Set RS485 in read mode
-				HAL_Delay(UART_BYTE_TIME_MS() * 2);
+				uint32_t start = HAL_GetTick();
+				while ((HAL_GetTick() - start) < UART_BYTE_TIME_US())
+
 				resend_timer = TIMER_SET();
 				waiting4response = 1;
 
@@ -227,7 +231,7 @@ void response() {
 		rxDataLen = 0;
 	}
 
-	if (TIMER_ELAPSED_MS(resend_timer, 100) && waiting4response) {  //resend
+	if (TIMER_ELAPSED_MS(resend_timer, 50) && waiting4response) {  //resend
 //		HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_SET);
 //		HAL_UART_Transmit(&huart1, uart_txBuffer, txDataLen, 2 * length * UART_BYTE_TIME_MS());
 //		HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, GPIO_PIN_RESET); // Set RS485 in read mode

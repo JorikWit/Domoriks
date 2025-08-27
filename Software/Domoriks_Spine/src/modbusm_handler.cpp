@@ -5,12 +5,16 @@
  * Created on October 5 2023
  */
 
-#include "Modbus/modbusm_handler.h"
-#include "Actions/actions.h"
-#include "Flash/flash.h"
-#include "IO/outputs.h"
+#include "modbusm_handler.h"
+#include "actions.h"
+// #include "Flash/flash.h"
+#include "outputs.h"
 #include "timer.h"
 #include "main.h"
+
+#include <stdint.h>
+#include <stdbool.h>
+
  /*
 
 make functionhandler template with switch case struct for all modbus functions
@@ -32,7 +36,7 @@ make functionhandler template with switch case struct for all modbus functions
 
  */
 
-uint8_t mbCoilsArray[1] = {0x00};
+uint8_t mbCoilsArray[2] = {0x00, 0x00};
 uint8_t mbInputsArray[1];
 uint16_t mbHRegArray[50];
 uint16_t mbIRegArray[1];
@@ -54,7 +58,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
 
     //handle message
     switch (message->function_code) {
-    case READ_COILS:
+    case READ_COILS: {
         //parse
         uint16_t first_coil = 0;
         uint16_t amount_coils = 0;
@@ -78,7 +82,8 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + i) = (nextB << (8 - (first_coil % 8)) | currentB >> (first_coil % 8));
         }
         break;
-    case READ_DISC_INPUTS:
+    }
+    case READ_DISC_INPUTS: {
         //parse
         uint16_t first_input = 0;
         uint16_t amount_inputs = 0;
@@ -99,10 +104,11 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         for (int i = 1; i < message->data_length; i++) {
             uint8_t currentB = *(modbusInputs + ((first_input / 8) + (i - 1)));
             uint8_t nextB = *(modbusInputs + ((first_input / 8) + (i)));
-            *(message->data + i) = ( ((nextB << 8) - (first_input % 8)) | (currentB >> (first_input % 8)) );
+            *(message->data + i) = (((nextB << 8) - (first_input % 8)) | (currentB >> (first_input % 8)));
         }
         break;
-    case READ_HOLD_REGS:
+    }
+    case READ_HOLD_REGS: {
         //parse
         uint16_t first_hreg = 0;
         uint16_t amount_hregs = 0;
@@ -125,7 +131,8 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + (i * 2) - 1) = *(modbusHReg + i - 1 + first_hreg);
         }
         break;
-    case READ_INPUT_REGS:
+    }
+    case READ_INPUT_REGS: {
         //parse
         uint16_t first_ireg = 0;
         uint16_t amount_iregs = 0;
@@ -147,7 +154,8 @@ uint8_t modbusm_handle(ModbusMessage* message) {
             *(message->data + (i * 2) - 1) = *(modbusIReg + i - 1 + first_ireg);
         }
         break;
-    case WRITE_SINGLE_COIL:
+    }
+    case WRITE_SINGLE_COIL: {
         //parse
         uint16_t coil_adress = 0;
         uint16_t value = 0;
@@ -177,7 +185,8 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         }
         message = message; //echo message
         break;
-    case WRITE_SINGLE_REG:      //   <- Tis only apply for holding regs
+    }
+    case WRITE_SINGLE_REG: {     //   <- Tis only apply for holding regs
         //parse
         uint16_t reg_adress = 0;
         if (message->data_length == 4) {
@@ -191,9 +200,9 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         //reply
         message = message; //echo message
         break;
-
-    case WRITE_MULTI_REGS: //   <- Tis only apply for holding regs
-    	//TODO test WRITE_MULTI_REGS
+    }
+    case WRITE_MULTI_REGS: {//   <- Tis only apply for holding regs
+        //TODO test WRITE_MULTI_REGS
         // Parse the request message
         uint16_t start_address = (message->data[0] << 8) | message->data[1];
         uint16_t num_registers = (message->data[2] << 8) | message->data[3];
@@ -214,6 +223,7 @@ uint8_t modbusm_handle(ModbusMessage* message) {
         message->data[2] = (num_registers >> 8) & 0xFF;
         message->data[3] = num_registers & 0xFF;
         break;
+    }
     case READ_EXCEPTION_STATUS:
     case DIAGNOSE_SERIAL:
     case COMM_EVENT_COUNT:
@@ -222,11 +232,13 @@ uint8_t modbusm_handle(ModbusMessage* message) {
     case READ_DEVICE_ID:
     case MASK_WRITE_REG:
     case RW_MULTI_REGS:
-    case READ_DEVICE_ID_:
+    case READ_DEVICE_ID_: {
         return NOT_IMPLEMENTED;
         break;
-    default:
+    }
+    default: {
         return INVALID_FUNCTION;
+    }
     }
 
     return HANDLED_OK;
@@ -236,7 +248,7 @@ uint8_t modbus_get_outputs() {
     for (int i = 0; i < OUTPUTS_SIZE; i++) {
         uint8_t byte_index = i / 8;
         uint8_t bit_index  = i % 8;
-        modbusCoils[byte_index] = (modbusCoils[byte_index] & ~(1 << bit_index)) | (outputs[i].param.value << bit_index);
+        modbusCoils[byte_index] = (uint8_t)((modbusCoils[byte_index] & ~(1 << bit_index)) | (outputs[i].param.value << bit_index));
     }
     return SYNC_OK;
 }
@@ -245,14 +257,14 @@ uint8_t modbus_set_outputs() {
     for (int i = 0; i < OUTPUTS_SIZE; i++) {
         uint8_t byte_index = i / 8;
         uint8_t bit_index  = i % 8;
-        outputs[i].param.value = (modbusCoils[byte_index] >> bit_index) & 1;
+        outputs[i].param.value = (uint8_t)((modbusCoils[byte_index] >> bit_index) & 1);
     }
     return SYNC_OK;
 }
 
 uint8_t modbus_parse_register(){
 	if (new_delay_action) {
-		uint16_t coil_i = mbHRegArray[0];   //todo test -1
+		uint16_t coil_i = mbHRegArray[0];
 		uint16_t coil_data = mbHRegArray[1];
 		uint16_t delay = mbHRegArray[2];
 		uint8_t pwm = (mbHRegArray[3] >> 8) & 0xFF;
@@ -282,64 +294,64 @@ uint8_t modbus_parse_register(){
 }
 
 uint8_t modbus_parse_action_update(){
-	if (new_action_update) {
-		uint8_t inputNumber = (mbHRegArray[0] >> 8 & 0xFF);
-		uint8_t actionType = (mbHRegArray[0] & 0xFF);      //single, double, long, switchon, switchoff, extra
+	// if (new_action_update) {
+	// 	uint8_t inputNumber = (mbHRegArray[0] >> 8 & 0xFF);
+	// 	uint8_t actionType = (mbHRegArray[0] & 0xFF);      //single, double, long, switchon, switchoff, extra
 
-		EventAction newEventAction;
+	// 	EventAction newEventAction;
 
-		newEventAction.action = (mbHRegArray[1] >> 8 & 0xFF);
-		newEventAction.delayAction = (mbHRegArray[1] & 0xFF);
-		newEventAction.delay = (uint32_t)(((mbHRegArray[2] >> 8 & 0xFF) << 16) | (mbHRegArray[2] & 0xFF));
-		newEventAction.pwm = (mbHRegArray[3] >> 8 & 0xFF);
-		newEventAction.id = (mbHRegArray[3] & 0xFF);
-		newEventAction.output = (mbHRegArray[4] >> 8 & 0xFF);
-		newEventAction.send = (mbHRegArray[4] & 0xFF);
-		newEventAction.extraEventId = (mbHRegArray[5] >> 8 & 0xFF);
-		uint8_t save = (mbHRegArray[5] & 0xFF);
-
-
-		EventAction* oldEventAction;
-
-		if (inputNumber < (EXTRA_ACTION_PER_INPUT * INPUTS_SIZE) &&
-			actionType == 6)  {
-			oldEventAction = &extraActions[inputNumber];
-		}
-		else if (inputNumber < INPUTS_SIZE) {
-			switch (actionType) {
-			case 1:
-				oldEventAction = &inputActions[inputNumber].singlePress;
-				break;
-			case 2:
-				oldEventAction = &inputActions[inputNumber].doublePress;
-				break;
-			case 3:
-				oldEventAction = &inputActions[inputNumber].longPress;
-				break;
-			case 4:
-				oldEventAction = &inputActions[inputNumber].switchOn;
-				break;
-			case 5:
-				oldEventAction = &inputActions[inputNumber].switchOff;
-				break;
-			default:
-				return WRONG_ACTION_TYPE;
-			}
-		}
-		else {
-			return WRONG_ACTION_INPUTNMBR;
-		}
-
-		copyEventAction(&newEventAction, oldEventAction);
+	// 	newEventAction.action = (mbHRegArray[1] >> 8 & 0xFF);
+	// 	newEventAction.delayAction = (mbHRegArray[1] & 0xFF);
+	// 	newEventAction.delay = (uint32_t)(((mbHRegArray[2] >> 8 & 0xFF) << 16) | (mbHRegArray[2] & 0xFF));
+	// 	newEventAction.pwm = (mbHRegArray[3] >> 8 & 0xFF);
+	// 	newEventAction.id = (mbHRegArray[3] & 0xFF);
+	// 	newEventAction.output = (mbHRegArray[4] >> 8 & 0xFF);
+	// 	newEventAction.send = (mbHRegArray[4] & 0xFF);
+	// 	newEventAction.extraEventId = (mbHRegArray[5] >> 8 & 0xFF);
+	// 	uint8_t save = (mbHRegArray[5] & 0xFF);
 
 
-		if (save) {
-		    Flash_Erase(USERDATA_ORIGIN, USERDATA_LENGTH);
-			Flash_WriteInputs(inputs);
-			Flash_WriteInputActions(inputActions);
-			Flash_WriteExtraActions(extraActions);
-			Flash_WriteOutputs(outputs);
-		}
-	}
-	return ACTION_OK;
+	// 	EventAction* oldEventAction;
+
+	// 	if (inputNumber < (EXTRA_ACTION_PER_INPUT * INPUTS_SIZE) &&
+	// 		actionType == 6)  {
+	// 		oldEventAction = &extraActions[inputNumber];
+	// 	}
+	// 	else if (inputNumber < INPUTS_SIZE) {
+	// 		switch (actionType) {
+	// 		case 1:
+	// 			oldEventAction = &inputActions[inputNumber].singlePress;
+	// 			break;
+	// 		case 2:
+	// 			oldEventAction = &inputActions[inputNumber].doublePress;
+	// 			break;
+	// 		case 3:
+	// 			oldEventAction = &inputActions[inputNumber].longPress;
+	// 			break;
+	// 		case 4:
+	// 			oldEventAction = &inputActions[inputNumber].switchOn;
+	// 			break;
+	// 		case 5:
+	// 			oldEventAction = &inputActions[inputNumber].switchOff;
+	// 			break;
+	// 		default:
+	// 			return WRONG_ACTION_TYPE;
+	// 		}
+	// 	}
+	// 	else {
+	// 		return WRONG_ACTION_INPUTNMBR;
+	// 	}
+
+	// 	copyEventAction(&newEventAction, oldEventAction);
+
+
+	// 	if (save) {
+	// 	    // Flash_Erase(USERDATA_ORIGIN, USERDATA_LENGTH);
+	// 		// Flash_WriteInputs(inputs);
+	// 		// Flash_WriteInputActions(inputActions);
+	// 		// Flash_WriteExtraActions(extraActions);
+	// 		// Flash_WriteOutputs(outputs);
+	// 	}
+	// }
+	return NOT_IMPLEMENTED;
 }

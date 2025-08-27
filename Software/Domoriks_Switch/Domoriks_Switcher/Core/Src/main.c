@@ -85,9 +85,9 @@ static void MX_IWDG_Init(void);
 uint8_t MODBUS_ID;
 //#define UPLOAD_NEW_MODBUS_ID
 #ifdef UPLOAD_NEW_MODBUS_ID
-  __attribute__((section(".modbus_id"))) const uint8_t new_id = 9;  // Logic ID, e.g., 1
+  __attribute__((section(".modbus_id"))) const uint8_t new_id = 1;  // Logic ID, e.g., 1
 #endif
-#define NEWACTIONS
+//#define NEWACTIONS
 
 uint8_t uart_rxBuffer[UART_BUFFER_SIZE] = { 0 };
 uint8_t new_rxdata = 0;
@@ -171,38 +171,64 @@ int main(void)
   HAL_GPIO_WritePin(W_RS485_GPIO_Port, W_RS485_Pin, 0); //Set RS485 in read mode
 
 #ifdef NEWACTIONS
-  EventAction input1_singlePress = 	{ toggle, 	nop, 0, 	100, 66, 3, 0, 0 };
-  EventAction input1_longPress = 	{ off, 		nop, 0, 	100, 66, 3, 0, 1 };
-  EventAction input2_singlePress = 	{ toggle,	nop, 0, 	100, 65, 1, 0, 0 };
-  EventAction input3_singlePress = 	{ on, 		off, 600, 	100, 68, 4, 0, 0 };
 
-  EventAction extraAction1 = 		{ off, 		nop, 0, 	100, 65, 1, 0, 255 };
+//	Action action;
+//	Action delayAction;
+//	uint32_t delay;
+//	uint8_t pwm;
+//	uint8_t id;
+//	uint8_t output;      //current domoriks devices only have a max of 6 outputs increase if needed
+//	uint8_t send;		   //1 = output, 2 feature, 3 send extraEvent;
+//	uint8_t extraEventId;
+
+  EventAction input1_singlePress = { toggle, 0, 0, 100, 64, 1, 0, 1 };
+  EventAction extraAction1 =	   { toggle, 0, 0, 100, 64, 2, 0, 2 };
+  EventAction extraAction2 =       { toggle, 0, 0, 100, 64, 3, 0, 3 };
+  EventAction extraAction3 =       { toggle, 0, 0, 100, 64, 4, 0, 4 };
+  EventAction extraAction4 =       { toggle, 0, 0, 100, 64, 5, 0, 5 };
+  EventAction extraAction5 =       { toggle, 0, 0, 100, 64, 6, 0, 6 };
+  EventAction extraAction6 =       { toggle, 0, 0, 100, 64, 7, 0, 7 };
+  EventAction extraAction7 =       { toggle, 0, 0, 100, 64, 8, 0, 8 };
+  EventAction extraAction8 =       { toggle, 0, 0, 100, 64, 9, 0, 9 };
+  EventAction extraAction9 =       { toggle, 0, 0, 100, 64, 10, 0, 10 };
+  EventAction extraAction10 =      { toggle, 0, 0, 100, 64, 11, 0, 11 };
+  EventAction extraAction11 =      { toggle, 0, 0, 100, 64, 12, 0, 12 };
+  EventAction extraAction12 =      { toggle, 0, 0, 100, 64, 13, 0, 13 };
+  EventAction extraAction13 =      { toggle, 0, 0, 100, 64, 14, 0, 14 };
+  EventAction extraAction14 =      { toggle, 0, 0, 100, 64, 15, 0, 15 };
+  EventAction extraAction15 =      { toggle, 0, 0, 100, 64, 16, 0, 0 };
 
   memcpy((uint8_t*)&inputActions[0].singlePress, (uint8_t*)&input1_singlePress, sizeof(EventAction));
-  memcpy((uint8_t*)&inputActions[1].singlePress, (uint8_t*)&input2_singlePress, sizeof(EventAction));
-  memcpy((uint8_t*)&inputActions[2].singlePress, (uint8_t*)&input3_singlePress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[1].singlePress, (uint8_t*)&input2_singlePress, sizeof(EventAction));
+//  memcpy((uint8_t*)&inputActions[2].singlePress, (uint8_t*)&input3_singlePress, sizeof(EventAction));
 //  memcpy((uint8_t*)&inputActions[3].singlePress, (uint8_t*)&input4_singlePress, sizeof(EventAction));
 
-//  memcpy((uint8_t*)&inputActions[0].doublePress, (uint8_t*)&input1_doublePress, sizeof(EventAction));
+  //memcpy((uint8_t*)&inputActions[0].doublePress, (uint8_t*)&input1_doublePress, sizeof(EventAction));
 //  memcpy((uint8_t*)&inputActions[1].doublePress, (uint8_t*)&input2_doublePress, sizeof(EventAction));
 //  memcpy((uint8_t*)&inputActions[2].doublePress, (uint8_t*)&input3_doublePress, sizeof(EventAction));
 //  memcpy((uint8_t*)&inputActions[3].doublePress, (uint8_t*)&input4_doublePress, sizeof(EventAction));
 
-  memcpy((uint8_t*)&inputActions[0].longPress, (uint8_t*)&input1_longPress, sizeof(EventAction));
+  //memcpy((uint8_t*)&inputActions[0].longPress, (uint8_t*)&input1_longPress, sizeof(EventAction));
 //  memcpy((uint8_t*)&inputActions[1].longPress, (uint8_t*)&input2_longPress, sizeof(EventAction));
 //  memcpy((uint8_t*)&inputActions[2].longPress, (uint8_t*)&input3_longPress, sizeof(EventAction));
 //  memcpy((uint8_t*)&inputActions[3].longPress, (uint8_t*)&input4_longPress, sizeof(EventAction));
 
   memcpy((uint8_t*)&extraActions[0], (uint8_t*)&extraAction1, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[1], (uint8_t*)&extraAction2, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[2], (uint8_t*)&extraAction3, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[3], (uint8_t*)&extraAction4, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[4], (uint8_t*)&extraAction5, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[5], (uint8_t*)&extraAction6, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[6], (uint8_t*)&extraAction7, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[7], (uint8_t*)&extraAction8, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[8], (uint8_t*)&extraAction9, sizeof(EventAction));
-//  memcpy((uint8_t*)&extraActions[9], (uint8_t*)&extraAction10, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[1], (uint8_t*)&extraAction2, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[2], (uint8_t*)&extraAction3, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[3], (uint8_t*)&extraAction4, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[4], (uint8_t*)&extraAction5, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[5], (uint8_t*)&extraAction6, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[6], (uint8_t*)&extraAction7, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[7], (uint8_t*)&extraAction8, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[8], (uint8_t*)&extraAction9, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[9], (uint8_t*)&extraAction10, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[10], (uint8_t*)&extraAction11, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[11], (uint8_t*)&extraAction12, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[12], (uint8_t*)&extraAction13, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[13], (uint8_t*)&extraAction14, sizeof(EventAction));
+  memcpy((uint8_t*)&extraActions[14], (uint8_t*)&extraAction15, sizeof(EventAction));
+
 
   Flash_Erase(USERDATA_ORIGIN, USERDATA_LENGTH);
   Flash_WriteInputs(inputs);

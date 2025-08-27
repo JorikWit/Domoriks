@@ -46,7 +46,7 @@ uint8_t write_pwm(OutputParam *param) {
 }
 
 
-
+//Output outputs[OUTPUTS_SIZE] = {};
 Output outputs[OUTPUTS_SIZE] = {
 //		{{pin,                      port, value,invert,min,max,delay,delayValue,startTimer},init_func, update_func}
 		{{L1_Pin,(const int)L1_GPIO_Port,     0,  	 1,  0,  1,    0,         0,         0}, &init_do, &write_do},
