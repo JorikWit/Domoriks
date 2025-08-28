@@ -59,7 +59,9 @@ void recieve() {
 				Controllino_RS485TxEnable();
 				// delayMicroseconds(UART_BYTE_TIME_US()*2); //2 char times -> delay is already in IDLE detection
 				Serial3.write(uart_txBuffer, txDataLen);
-				Serial3.flush(); //wait for transmission complete
+				Serial.write(uart_txBuffer, txDataLen);
+				Serial3.flush();
+				Serial.flush();
 				Controllino_RS485RxEnable();
 			}
 		}

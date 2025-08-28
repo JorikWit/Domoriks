@@ -5,10 +5,24 @@
 #include "timer.h"
 #include "device_config.h"
 
-uint8_t uart_rxBuffer[UART_BUFFER_SIZE];
-uint8_t new_rxdata;
-uint16_t rxDataLen;
+// uint8_t uart_rxBuffer[UART_BUFFER_SIZE];
+// uint8_t new_rxdata;
+// uint16_t rxDataLen;
 
+// Temporary buffers for each serial
+uint8_t serial_buffer[UART_BUFFER_SIZE];
+uint8_t serial3_buffer[UART_BUFFER_SIZE];
+
+// Merged buffer for Modbus processing
+uint8_t uart_rxBuffer[UART_BUFFER_SIZE];
+
+volatile uint16_t serial_index = 0;
+volatile uint16_t serial3_index = 0;
+
+uint16_t rxDataLen = 0;   // length of merged data
+uint8_t new_rxdata = 0;   // flag to signal idle
+
+unsigned long lastByteTime = 0;
 
 #include <Controllino.h>
 
@@ -19,9 +33,7 @@ void setup() {
 
   Controllino_RS485Init(115200);
   Controllino_RS485RxEnable();
-  
   Serial.begin(115200);
-  Serial.println("Controllino Booted");
 }
 
 void loop() {
@@ -49,26 +61,39 @@ void loop() {
   update_outputs();
 }
 
-volatile uint8_t rxIndex = 0;
-unsigned long lastByteTime = 0;
+unsigned long lastByteTimeSerial = 0;
+unsigned long lastByteTimeSerial3 = 0;
 
 void serialRead() {
-  // Check for idle condition
-  if (rxIndex > 0 && (micros() - lastByteTime > IDLE_TIMEOUT) && !new_rxdata) {
-    rxDataLen = rxIndex;   // store received length
-    rxIndex = 0;           // reset index for next frame
-    new_rxdata = true;     // signal new packet ready
-    return;                // exit, don't read more
-  }
-
-  // Read incoming data while no unprocessed packet exists
-  while (Serial3.available() > 0 && !new_rxdata) {
-    uint8_t incomingByte = Serial3.read();
-
-    if (rxIndex < UART_BUFFER_SIZE - 1) {
-      uart_rxBuffer[rxIndex++] = incomingByte;
+    // Read USB Serial
+    while (Serial.available() > 0 && serial_index < UART_BUFFER_SIZE) {
+        serial_buffer[serial_index++] = Serial.read();
+        lastByteTimeSerial = micros();
     }
 
-    lastByteTime = micros();  // Update timestamp in µs
-  }
+    // Read RS485 Serial3
+    while (Serial3.available() > 0 && serial3_index < UART_BUFFER_SIZE) {
+        serial3_buffer[serial3_index++] = Serial3.read();
+        lastByteTimeSerial3 = micros();
+    }
+
+    // Check idle timeout for Serial
+    if (serial_index > 0 && (micros() - lastByteTimeSerial > IDLE_TIMEOUT) && !new_rxdata) {
+        rxDataLen = serial_index;
+        if (rxDataLen > UART_BUFFER_SIZE) rxDataLen = UART_BUFFER_SIZE;
+
+        memcpy(uart_rxBuffer, serial_buffer, rxDataLen);
+        serial_index = 0;
+        new_rxdata = 1;  // signal packet ready
+    }
+
+    // Check idle timeout for Serial3
+    if (serial3_index > 0 && (micros() - lastByteTimeSerial3 > IDLE_TIMEOUT) && !new_rxdata) {
+        rxDataLen = serial3_index;
+        if (rxDataLen > UART_BUFFER_SIZE) rxDataLen = UART_BUFFER_SIZE;
+
+        memcpy(uart_rxBuffer, serial3_buffer, rxDataLen);
+        serial3_index = 0;
+        new_rxdata = 1;  // signal packet ready
+    }
 }
